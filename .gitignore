@@ -5,6 +5,10 @@
 /.pnp
 .pnp.js
 
+# Dev and Prod
+.env
+/videos/*
+
 # testing
 /coverage
 
