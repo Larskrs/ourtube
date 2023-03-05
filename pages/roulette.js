@@ -27,9 +27,9 @@ export default function Home() {
 
       <main className={styles.main}>
         <div className={styles.controls}>
-            current: {currentHistory } - length: {history.length}
+            {/* current: {currentHistory } - length: {history.length} */}
             <div>
-              <button className={styles.next} onClick={handlePrevious} >History</button>
+              {/* <button className={styles.next} onClick={handlePrevious} >History</button> */}
               <button className={styles.next} onClick={handleNext} >Next</button>
             </div>
 
