@@ -3,6 +3,7 @@ function VideoPlayer({ id, onEnded }) {
       <video
         src={`/api/videos?videoId=${id}`}
         width="800px"
+        style={{maxWidth: `100%`, maxHeight: `800px`}}
         height="auto"
         controls
         autoPlay

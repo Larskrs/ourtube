@@ -4,8 +4,9 @@ import styles from '../styles/Home.module.css'
 
 import VideoUpload from '../components/UploadVideo'
 import Link from 'next/link'
+import { getRandomVideo } from '../lib/catalog'
 
-export default function Home({nextVideo}) {
+export default function Home() {
   return (
     <>
     <div className={styles.container}>
@@ -27,12 +28,12 @@ export default function Home({nextVideo}) {
 
 export const getServerSideProps = async (context) => {
 
-  const random = await (await fetch("http://localhost/api/catalog")).json();
+
+  
 
 return {
   props: {
       query: context.query,
-      nextVideo: random.id
     },
 };
 };

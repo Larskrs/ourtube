@@ -30,13 +30,14 @@ export default function Home() {
             {/* current: {currentHistory } - length: {history.length} */}
             <div>
               {/* <button className={styles.next} onClick={handlePrevious} >History</button> */}
+              <Link href={"/"}>Home</Link>
               <button className={styles.next} onClick={handleNext} >Next</button>
             </div>
 
         </div>
         {current && 
           <>
-            <VideoPlayer id={current.id} onEnded={() => {handleNext()}} /> 
+            <VideoPlayer className={styles.video} id={current.id} onEnded={() => {handleNext()}} /> 
             {error && error.code}
             <h2>{current.title}</h2>
           </>
