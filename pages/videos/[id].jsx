@@ -31,7 +31,7 @@ function VideoPage({ nextVideo, data, catalog }) {
 
             {catalog.data.map((vid) => {
               return (
-                <Link href={"/videos/" + vid.id}>
+                <Link key={vid.id} href={"/videos/" + vid.id}>
                   <Image src={"/api/thumbnail?id=" + vid.id} alt={"Thumbnail"} width={240} height={135}/>
                   <p>{vid.title}</p>
                 </Link>

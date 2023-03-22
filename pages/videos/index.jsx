@@ -15,7 +15,7 @@ export async function getServerSideProps (ctx) {
 }
 
 
-export default function() {
+export default function Home () {
     return (
         <div>
             
