@@ -21,8 +21,9 @@ function uploadVideoStream(req, res) {
   bb.on("file", (_, file, info) => {
     // auth-api.mp4
     fileName = info.filename;
+    const id = fileName.split('.').slice(0, -1).join('.')
     const filePath = `./videos/${fileName}`;
-
+    fs.mkdirSync(`./videos/${id}/`)
     const stream = fs.createWriteStream(filePath);
 
 
@@ -58,7 +59,7 @@ function optimizeVideo (fileName, stream) {
   console.log({fileName, basePath, dir, baseName, id})
 
   console.log(`./videos/${id}/`)
-  fs.mkdirSync(`./videos/${id}/`)
+  
   
 
 
