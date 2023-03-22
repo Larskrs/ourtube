@@ -4,7 +4,7 @@ import { uuidv4 } from "uuid"
 import Link from "next/link";
 import supabase from "../lib/Supabase";
 import VideoPlayer from "./VideoPlayer";
-
+import fs from "fs"
 
 function VideoUpload() {
   const [file, setFile] = useState();
@@ -27,6 +27,10 @@ function VideoUpload() {
     const newId = Date.now()
     const newName = newId+".mp4";
     const newFile = new File([file], newName);
+
+
+    fs.mkdirSync(`./videos/${newId}/`)
+
     setId(newId)
 
     data.append("file", newFile);
