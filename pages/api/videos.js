@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import busboy from "busboy";
 import fs from "fs";
+import path from "path";
 
 export const config = {
   api: {
@@ -9,14 +10,21 @@ export const config = {
 };
 
 function uploadVideoStream(req, res) {
+
+  
+
+
   const bb = busboy({ headers: req.headers });
+
+  let fileName;
 
   bb.on("file", (_, file, info) => {
     // auth-api.mp4
-    const fileName = info.filename;
+    fileName = info.filename;
     const filePath = `./videos/${fileName}`;
 
     const stream = fs.createWriteStream(filePath);
+
 
     file.pipe(stream);
   });
@@ -24,11 +32,159 @@ function uploadVideoStream(req, res) {
   bb.on("close", () => {
     res.writeHead(200, { Connection: "close" });
     res.end(`That's the end`);
+
+    optimizeVideo(fileName, null);
   });
 
   req.pipe(bb);
+
   return;
 }
+
+
+import Ffmpeg from "fluent-ffmpeg";
+
+function optimizeVideo (fileName, stream) {
+
+
+  const dir = "./videos/"
+  const basePath = path.join(__dirname, "../../../../" ,dir, fileName)
+  const baseName = fileName.substr(fileName.lastIndexOf(".") + 1)
+  const id = fileName.split('.').slice(0, -1).join('.')
+
+
+  console.log("Attempting to optimize video...")
+  console.log("[PARAMS]")
+  console.log({fileName, basePath, dir, baseName, id})
+
+  console.log(`./videos/${id}/`)
+  fs.mkdirSync(`./videos/${id}/`)
+  
+
+
+  
+
+
+
+
+  // --------------------------------
+  //    720
+  // --------------------------------
+  
+  Ffmpeg(basePath)
+  
+  
+  .output("./videos/" + id + "/135.mp4")
+  .videoCodec('libx264')
+  .size("240x135")
+  .videoBitrate("20k")
+  .audioBitrate("20")
+  
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('progress', (progress) => {
+    console.log('... frames: ' + progress.frames)
+  })
+  .on('end', () => {
+    console.log('... finished processing video')
+    
+    console.log('... deleting original video file')
+    fs.unlinkSync(basePath)
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+  .run();
+  
+
+
+
+
+  Ffmpeg(basePath)
+  // generate 720p video
+  .output("./videos/" + id + "/720.mp4")
+  .videoCodec('libx264')
+  .size("1280x720")
+
+
+
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('progress', (progress) => {
+    console.log('... frames: ' + progress.frames)
+  })
+  .on('end', () => {
+      console.log('... finished processing video')
+
+      console.log('... deleting original video file')
+      fs.unlinkSync(basePath)
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+  .run();
+  
+
+
+
+
+
+  Ffmpeg(basePath)
+
+  // generate full HD video
+  .output("./videos/" + id + "/1080.mp4")
+  .videoCodec('libx264')
+  .size("1920x1080")
+  .videoBitrate("4000k")
+
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('progress', (progress) => {
+    console.log('... frames: ' + progress.frames)
+  })
+  .on('end', () => {
+      console.log('... finished processing video')
+
+      console.log('... deleting original video file')
+      fs.unlinkSync(basePath)
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+  .run();
+  
+
+
+
+  // ----------------------------------------------------------------
+  // THumbnails
+  // ----------------------------------------------------------------
+
+  Ffmpeg(basePath)
+  .takeScreenshots({
+    count: 4,
+    folder: './videos/'+id+'/thumbnails/',
+  })
+
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('progress', (progress) => {
+    console.log('... frames: ' + progress.frames)
+  })
+  .on('end', () => {
+      console.log('... finished taking screenshot of video')
+
+      console.log('... deleting original video file')
+      fs.unlinkSync(basePath)
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+  .run();
+
+}
+
+
+
+
+
+
 
 const CHUNK_SIZE_IN_BYTES = 1000000; // 1 mb
 
@@ -36,8 +192,16 @@ function getVideoStream(req, res) {
 
 
   const videoId = req.query.videoId;
+  let quality = req.query.quality;
+  if (!quality) { quality = "135"}
+  console.log({quality})
 
-  const filePath = `./videos/${videoId}.mp4`;
+  let filePath = `./videos/${videoId}/${quality}.mp4`;
+
+
+  console.log({filePath})
+  
+
 
   const options = {};
 
@@ -69,7 +233,7 @@ function getVideoStream(req, res) {
         if (err) {
             console.error(`File stat error for ${filePath}.`);
             console.error(err);
-            res.sendStatus(500);
+            res.status(500);
             return;
         }
 

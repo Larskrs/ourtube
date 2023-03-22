@@ -3,11 +3,15 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import VideoPlayer from "../../components/VideoPlayer";
 import supabase from "../../lib/Supabase";
+import { getRandomVideo, getRandomVideos } from "../../lib/catalog"
+import Image from "next/image";
 
-function VideoPage({ nextVideo, data }) {
+
+function VideoPage({ nextVideo, data, catalog }) {
   const router = useRouter();
 
   const { id } = router.query;
+  
 
 
   
@@ -16,13 +20,23 @@ function VideoPage({ nextVideo, data }) {
 
   return <>
   <Link href={"/"} > | Home | </Link>
-           {nextVideo && <Link href={"/videos/" + nextVideo} >Next Video</Link> }
+           {nextVideo && <Link href={"/videos/" + nextVideo.id} >Next Video</Link> }
             <h2>{data.title}</h2>
             <VideoPlayer id={id} onEnded={() => {
               console.log(data.title);
-              router.push("/videos/" + nextVideo)
-            }}/>;
+              if (nextVideo) {
+                router.push("/videos/" + nextVideo.id)
+              }
+            }}/>
 
+            {catalog.data.map((vid) => {
+              return (
+                <Link href={"/videos/" + vid.id}>
+                  <Image src={"/api/thumbnail?id=" + vid.id} alt={"Thumbnail"} width={240} height={135}/>
+                  <p>{vid.title}</p>
+                </Link>
+              )
+            })}
 
             <style jsx>{`
               
@@ -33,16 +47,19 @@ export const getServerSideProps = async (context) => {
 
   
   const id = context.query.id;
-  const random = await (await fetch("http://localhost/api/catalog?exclude=" + id)).json();
+    const random = await (await getRandomVideo([])).data
     const data = (await supabase.from("videos").select("*").eq("id", id).single()).data
 
-    console.log({ data})
+    const catalog = await getRandomVideos(10)
+
+    console.log({ data, random})
 
   return {
     props: {
         query: context.query,
-        nextVideo: random.id,
+        nextVideo: random,
         data,
+        catalog
       },
   };
 };

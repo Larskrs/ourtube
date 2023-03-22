@@ -72,10 +72,16 @@ function VideoUpload() {
       id: id,
       source: "/api/videos?videoId=" + id,
       title: title,
+      storage: process.env.NEXT_PUBLIC_STORAGE_ID,
     })
     .select("*")
     
+
+    
+    
+    
     console.log({data, error})
+    
     
     setPublished(true);
   } 
