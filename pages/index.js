@@ -19,6 +19,7 @@ export default function Home() {
       <main className={styles.main}>
         <VideoUpload />
         <Link className={styles.link} href={"/roulette"} >Roulette</Link>
+        <Link className={styles.link} href={"/videos"} >Videos</Link>
       </main>
     </div>
 
