@@ -21,6 +21,21 @@ function VideoPage({ nextVideo, data, catalog }) {
 
   return <>
 
+
+  <Head>
+    <title>{data.title}</title>
+    <meta name="twitter:title" content={data.title}/>
+    <meta name="twitter:description" content={"Video posted on " + "clumsyturtle"}/>
+    <meta name="twitter:image" content={`/api/thumbnail?id=${data.id}`}/>
+    <meta name="twitter:card" content={`/api/thumbnail?id=${data.id}`}/>
+    <meta name="theme-color" content="#5448C8"></meta>
+    <meta name="twitter:player:width" content="320" />
+    <meta name="twitter:player:height" content="180" />
+    <meta name="twitter:player:stream" content={`/api/videos?id=${data.id}`} />
+    <meta name="twitter:player:stream:content_type" content="video/mp4" />
+
+  </Head>
+
   
   <nav className={styles.nav}>
           <Link href={"/"} >Home</Link>

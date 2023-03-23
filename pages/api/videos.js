@@ -46,6 +46,7 @@ import Ffmpeg from "fluent-ffmpeg";
 
 function optimizeVideo (fileName, stream) {
 
+  const startTime = new Date().getTime()
 
   const dir = "./videos/"
   const basePath = path.join(__dirname, "../../../../" ,dir, fileName)
@@ -62,7 +63,25 @@ function optimizeVideo (fileName, stream) {
   
 
 
-  
+    // ----------------------------------------------------------------
+  // THumbnails
+  // ----------------------------------------------------------------
+
+  const _thumbnails = Ffmpeg(basePath)
+  .takeScreenshots({
+    count: 4,
+    folder: './videos/'+id+'/thumbnails/',
+  })
+
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('end', () => {
+      console.log('... finished taking screenshot of video')
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+
+
 
 
 
@@ -71,7 +90,7 @@ function optimizeVideo (fileName, stream) {
   //    135
   // --------------------------------
   
-  Ffmpeg(basePath)
+  const _135 = Ffmpeg(basePath)
   
   
   .output("./videos/" + id + "/135.mp4")
@@ -87,17 +106,22 @@ function optimizeVideo (fileName, stream) {
     console.log(err);
   })
   .on('progress', (progress) => {
-    console.log('... frames: ' + progress.frames)
+    // console.log('... frames: ' + progress.frames)
   })
   .on('end', () => {
     console.log('... finished processing video')
     
-    console.log('... deleting original video file')
-    fs.unlinkSync(basePath)
+    _720.run()
+    _thumbnails.run()
   })
   .setFfmpegPath(process.env.FFMPEG_PATH)
-  .run();
   
+
+
+
+  _135.run()
+
+
 
 
   // --------------------------------
@@ -105,29 +129,29 @@ function optimizeVideo (fileName, stream) {
   // --------------------------------
 
 
-  Ffmpeg(basePath)
+  const _720 = Ffmpeg(basePath)
   // generate 720p video
   .output("./videos/" + id + "/720.mp4")
   .videoCodec('libx264')
   .setSize("?x720").autoPad()
 
 
-
+  .on('start', () => {
+    console.log('Starting optimization for 720p')
+  })
   .on('error', (err) => {
     console.error(err);
   })
   .on('progress', (progress) => {
-    console.log('... frames: ' + progress.frames)
+    // console.log('... frames: ' + progress.frames)
   })
   .on('end', (result) => {
       console.log('... finished processing video')
 
-      console.log('... deleting original video file')
       console.log({result})
-      fs.unlinkSync(basePath)
+      _1080.run()
   })
   .setFfmpegPath(process.env.FFMPEG_PATH)
-  .run();
   
 
 
@@ -137,7 +161,7 @@ function optimizeVideo (fileName, stream) {
   // --------------------------------
 
 
-  Ffmpeg(basePath)
+  const _1080 =  Ffmpeg(basePath)
 
   // generate full HD video
   .output("./videos/" + id + "/1080.mp4")
@@ -145,50 +169,40 @@ function optimizeVideo (fileName, stream) {
   .setSize("?x1080").autoPad()
   .videoBitrate("4000k")
 
+  .on('start', () => {
+    console.log('Starting optimization for 1080p')
+  })
   .on('error', (err) => {
     console.error(err);
   })
   .on('progress', (progress) => {
-    console.log('... frames: ' + progress.frames)
+    // console.log('... frames: ' + progress.frames)
   })
   .on('end', () => {
       console.log('... finished processing video')
-
-      console.log('... deleting original video file')
       fs.unlinkSync(basePath)
+      
+      const timeTaken = (new Date().getTime() - startTime)
+      console.log('... deleting original video file')
+      console.log('|-------------------------------------')
+      console.log('                                      ')
+      console.log('      Finished Optimization           ')
+      console.log('      Time: '+timeTaken+ 'ms          ')
+      console.log('      Time: '+timeTaken  / 1000 + 's  ')
+      console.log('                                      ')
+      console.log(`      Video: ${id}                    `)
+      console.log('                                      ')
+      console.log('|------------------------------------|')
+
+      
+      
   })
   .setFfmpegPath(process.env.FFMPEG_PATH)
-  .run();
   
 
-
-
-  // ----------------------------------------------------------------
-  // THumbnails
-  // ----------------------------------------------------------------
-
-  Ffmpeg(basePath)
-  .takeScreenshots({
-    count: 4,
-    folder: './videos/'+id+'/thumbnails/',
-  })
-
-  .on('error', (err) => {
-    console.error(err);
-  })
-  .on('progress', (progress) => {
-    console.log('... frames: ' + progress.frames)
-  })
-  .on('end', () => {
-      console.log('... finished taking screenshot of video')
-
-      console.log('... deleting original video file')
-      fs.unlinkSync(basePath)
-  })
-  .setFfmpegPath(process.env.FFMPEG_PATH)
-  .run();
-
 }
+
+
 
 
 

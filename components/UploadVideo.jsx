@@ -127,7 +127,9 @@ function VideoUpload() {
       <style jsx>{`
 
         .upload {
-          transition: all 0.1s 
+          transition: all 0.1s;
+          background: var(--gray-200)
+          color: white;
         }
         .upload:disabled {
           background: transparent;
@@ -143,7 +145,8 @@ function VideoUpload() {
           font-weight: 700;
           cursor: pointer;
           background: #5448C8;
-          transition: all 0.1s 
+          transition: all 0.1s;
+          color: white;
         }
         .publish:disabled {
           background: transparent;
