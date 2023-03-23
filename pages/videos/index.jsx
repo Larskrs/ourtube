@@ -4,6 +4,7 @@ import { getRandomVideo } from "../../lib/catalog";
 export async function getServerSideProps (ctx) {
     
     const random = await getRandomVideo([])
+    console.log({error: random.error})
 
     return {
         redirect: {

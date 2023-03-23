@@ -7,6 +7,7 @@ import { getRandomVideo, getRandomVideos } from "../../lib/catalog"
 import Image from "next/image";
 import styles from "../../styles/Videos.module.css"
 import Head from "next/head";
+import { useEffect } from "react";
 
 function VideoPage({ nextVideo, data, catalog }) {
   const router = useRouter();
@@ -14,8 +15,15 @@ function VideoPage({ nextVideo, data, catalog }) {
   const { id } = router.query;
   
 
+  useEffect(() => {
 
-  
+    navigator.mediaSession.setActionHandler("nexttrack", (details) => {
+      if (nextVideo) {
+        router.push("/videos/" + nextVideo.id)
+      }
+    }
+    )  
+  }, [])
   console.log({ id });
 
 
