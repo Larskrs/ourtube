@@ -87,8 +87,6 @@ export const getServerSideProps = async (context) => {
 
     const catalog = await getRandomVideos(25)
 
-    console.log({ data, random})
-
     if (!data) {
       return {
         redirect: {
