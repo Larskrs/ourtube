@@ -110,7 +110,7 @@ function VideoUpload() {
             <input type="file" id="file" accept=".mp4" onChange={handleSetFile} />
           </div>
         </form>
-        <button onClick={handleSubmit}>Upload video</button>
+        <button disabled={!file} className={"upload"} onClick={handleSubmit}>Upload video</button>
 
       <div className="form">
         <form>
@@ -126,6 +126,16 @@ function VideoUpload() {
 
       <style jsx>{`
 
+        .upload {
+          transition: all 0.1s 
+        }
+        .upload:disabled {
+          background: transparent;
+          scale: 1.5;
+        }
+        .upload:hover:not(.upload:disabled) {
+          background: #5448C8;
+        }
         .publish {
           border: none;
           border-radius: 10px;

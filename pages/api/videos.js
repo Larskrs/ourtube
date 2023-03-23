@@ -68,7 +68,7 @@ function optimizeVideo (fileName, stream) {
 
 
   // --------------------------------
-  //    720
+  //    135
   // --------------------------------
   
   Ffmpeg(basePath)
@@ -76,10 +76,13 @@ function optimizeVideo (fileName, stream) {
   
   .output("./videos/" + id + "/135.mp4")
   .videoCodec('libx264')
-  .size("240x135")
+  .setSize("?x135").autoPad()
   .videoBitrate("20k")
   .audioBitrate("20")
   
+  .on('start', () => {
+    console.log('Starting optimization for 135p')
+  })
   .on('error', (err) => {
     console.log(err);
   })
@@ -97,13 +100,16 @@ function optimizeVideo (fileName, stream) {
   
 
 
+  // --------------------------------
+  //    720
+  // --------------------------------
 
 
   Ffmpeg(basePath)
   // generate 720p video
   .output("./videos/" + id + "/720.mp4")
   .videoCodec('libx264')
-  .size("1280x720")
+  .setSize("?x720").autoPad()
 
 
 
@@ -113,10 +119,11 @@ function optimizeVideo (fileName, stream) {
   .on('progress', (progress) => {
     console.log('... frames: ' + progress.frames)
   })
-  .on('end', () => {
+  .on('end', (result) => {
       console.log('... finished processing video')
 
       console.log('... deleting original video file')
+      console.log({result})
       fs.unlinkSync(basePath)
   })
   .setFfmpegPath(process.env.FFMPEG_PATH)
@@ -125,6 +132,9 @@ function optimizeVideo (fileName, stream) {
 
 
 
+  // --------------------------------
+  //    1080
+  // --------------------------------
 
 
   Ffmpeg(basePath)
@@ -132,7 +142,7 @@ function optimizeVideo (fileName, stream) {
   // generate full HD video
   .output("./videos/" + id + "/1080.mp4")
   .videoCodec('libx264')
-  .size("1920x1080")
+  .setSize("?x1080").autoPad()
   .videoBitrate("4000k")
 
   .on('error', (err) => {
