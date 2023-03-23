@@ -59,7 +59,7 @@ export const getServerSideProps = async (context) => {
 
   
   const id = context.query.id;
-  const random = await (await getRandomVideo([])).data
+  const random = await (await getRandomVideo([id])).data
   const data = (await supabase.from("videos").select("*").eq("id", id).single()).data
 
     const catalog = await getRandomVideos(25)
