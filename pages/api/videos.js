@@ -78,6 +78,7 @@ function optimizeVideo (fileName, stream) {
   })
   .on('end', () => {
       console.log('... finished taking screenshot of video')
+
   })
   .setFfmpegPath(process.env.FFMPEG_PATH)
 
@@ -112,6 +113,9 @@ function optimizeVideo (fileName, stream) {
   })
   .on('end', () => {
     console.log('... finished processing 135p for - ' + id)
+
+    _720.run()
+
   })
   .setFfmpegPath(process.env.FFMPEG_PATH)
   
@@ -148,6 +152,8 @@ function optimizeVideo (fileName, stream) {
   })
   .on('end', (result) => {
       console.log('... finished processing 720p for - ' + id)
+
+      _1080.run()
   })
   .setFfmpegPath(process.env.FFMPEG_PATH)
   
@@ -202,8 +208,6 @@ function optimizeVideo (fileName, stream) {
     fs.mkdir(`./videos/${id}/`, () => {
 
       _135.run()
-      _720.run()
-      _1080.run()
       _thumbnails.run()
       
     })
