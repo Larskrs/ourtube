@@ -2,6 +2,7 @@
 import busboy from "busboy";
 import fs from "fs";
 import path from "path";
+import logUpdate from 'log-update';
 
 
 export const config = {
@@ -93,9 +94,11 @@ function optimizeVideo (fileName, stream) {
     console.error(err);
   })
   .on('progress', (progress) => {
-    if (Math.round(progress.percent) % 10) {
+
+    if (Math.round(progress.percent) % 25) {
       console.log('... Video: ' + id + " - " + Math.round(progress.percent))
     }
+    
 
   })
   .on('end', () => {
@@ -113,6 +116,8 @@ function optimizeVideo (fileName, stream) {
       console.log(`      Video: ${id}                    `)
       console.log('                                      ')
       console.log('|------------------------------------|')
+
+
 
       
       
@@ -170,7 +175,7 @@ function optimizeVideo (fileName, stream) {
     console.log(err);
   })
   .on('progress', (progress) => {
-    if (Math.round(progress.percent) % 10) {
+    if (Math.round(progress.percent) % 25) {
       console.log('... Video: ' + id + " - " + Math.round(progress.percent))
     }
   })
@@ -213,7 +218,7 @@ function optimizeVideo (fileName, stream) {
     console.error(err);
   })
   .on('progress', (progress) => {
-    if (Math.round(progress.percent) % 10) {
+    if (progress.percent % 25) {
       console.log('... Video: ' + id + " - " + Math.round(progress.percent))
     }
   })

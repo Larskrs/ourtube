@@ -8,6 +8,7 @@ import Image from "next/image";
 import styles from "../../styles/Videos.module.css"
 import Head from "next/head";
 import { useEffect } from "react";
+import { shortTxt } from "../../lib/TextLib";
 
 function VideoPage({ nextVideo, data, catalog }) {
   const router = useRouter();
@@ -61,7 +62,7 @@ function VideoPage({ nextVideo, data, catalog }) {
                       router.push("/videos/" + nextVideo.id)
                     }
                   }}/>
-                  <h2 style={{textAlign: `left`}}>{data.title}</h2>
+                  <h2 style={{textAlign: `left`}}>{shortTxt(data.title, 75)}</h2>
 
 
                   </div>
@@ -71,7 +72,7 @@ function VideoPage({ nextVideo, data, catalog }) {
                     return (
                       <Link className={styles.videoComp} key={vid.id} href={"/videos/" + vid.id}>
                         <Image src={"/api/thumbnail?id=" + vid.id} alt={"Thumbnail"} width={240} height={135}/>
-                        <p>{vid.title}</p>
+                        <p>{shortTxt(vid.title, 60)}</p>
                       </Link>
                     )
                   })}
@@ -80,6 +81,8 @@ function VideoPage({ nextVideo, data, catalog }) {
     </div>
   </>
 }
+
+
 export const getServerSideProps = async (context) => {
 
   

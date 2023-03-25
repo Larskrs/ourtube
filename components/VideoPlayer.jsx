@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { shortTxt } from "../lib/TextLib";
 
 function VideoPlayer({ id, onEnded, title }) {
 
@@ -83,7 +84,7 @@ function VideoPlayer({ id, onEnded, title }) {
           />
 
           <div className="overlay">
-            <h2 className="title">{title}</h2>
+            <h2 className="title">{shortTxt(title, 50)}</h2>
             {/* <div className="controls">
               <progress className="progress" id="progress" value={progress} max={100} min={0}></progress>
 
