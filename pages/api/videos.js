@@ -3,6 +3,7 @@ import busboy from "busboy";
 import fs from "fs";
 import path from "path";
 
+
 export const config = {
   api: {
     bodyParser: false,
@@ -44,6 +45,8 @@ function uploadVideoStream(req, res) {
 
 import Ffmpeg from "fluent-ffmpeg";
 
+
+
 function optimizeVideo (fileName, stream) {
 
   const startTime = new Date().getTime()
@@ -59,103 +62,10 @@ function optimizeVideo (fileName, stream) {
   console.log({fileName, basePath, dir, baseName, id})
 
   console.log(`./videos/${id}/`)
-
+  fs.mkdirSync(`./videos/${id}/`)
   
 
 
-    // ----------------------------------------------------------------
-  // THumbnails
-  // ----------------------------------------------------------------
-
-  const _thumbnails = Ffmpeg(basePath)
-  .takeScreenshots({
-    count: 4,
-    folder: './videos/'+id+'/thumbnails/',
-  })
-
-  .on('error', (err) => {
-    console.error(err);
-  })
-  .on('end', () => {
-      console.log('... finished taking screenshot of video')
-
-  })
-  .setFfmpegPath(process.env.FFMPEG_PATH)
-
-
-
-
-
-
-  // --------------------------------
-  //    135
-  // --------------------------------
-  
-  const _135 = Ffmpeg(basePath)
-  
-  
-  .output("./videos/" + id + "/135.mp4")
-  .videoCodec('libx264')
-  .setSize("?x135").autoPad()
-  .videoBitrate("20k")
-  .audioBitrate("20")
-  
-  .on('start', () => {
-    console.log('Starting optimization for 135p')
-  })
-  .on('error', (err) => {
-    console.log(err);
-  })
-  .on('progress', (progress) => {
-    if (Math.round(progress.percent) % 10) {
-      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
-    }
-  })
-  .on('end', () => {
-    console.log('... finished processing 135p for - ' + id)
-
-    _720.run()
-
-  })
-  .setFfmpegPath(process.env.FFMPEG_PATH)
-  
-
-
-
-  
-  
-
-
-  // --------------------------------
-  //    720
-  // --------------------------------
-
-
-  const _720 = Ffmpeg(basePath)
-  // generate 720p video
-  .output("./videos/" + id + "/720.mp4")
-  .videoCodec('libx264')
-  .videoBitrate(1000)
-  .setSize("?x720").autoPad()
-  
-
-  .on('start', () => {
-    console.log('Starting optimization for 720p')
-  })
-  .on('error', (err) => {
-    console.error(err);
-  })
-  .on('progress', (progress) => {
-    if (Math.round(progress.percent) % 10) {
-      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
-    }
-  })
-  .on('end', (result) => {
-      console.log('... finished processing 720p for - ' + id)
-
-      _1080.run()
-  })
-  .setFfmpegPath(process.env.FFMPEG_PATH)
   
 
 
@@ -169,9 +79,12 @@ function optimizeVideo (fileName, stream) {
 
   // generate full HD video
   .output("./videos/" + id + "/1080.mp4")
+  .format('mp4')
+  // .videoBitrate('2048k')
   .videoCodec('libx264')
-  .setSize("?x1080").autoPad()
-  .videoBitrate("4000k")
+  .size('?x1920')
+  .audioBitrate('128k')
+  .audioChannels(1)
 
   .on('start', () => {
     console.log('Starting optimization for 1080p')
@@ -205,13 +118,118 @@ function optimizeVideo (fileName, stream) {
       
     })
     .setFfmpegPath(process.env.FFMPEG_PATH)
-    fs.mkdir(`./videos/${id}/`, () => {
 
-      _135.run()
-      _thumbnails.run()
-      
-    })
+
+
+
+    // ----------------------------------------------------------------
+  // THumbnails
+  // ----------------------------------------------------------------
+
+  const _thumbnails = Ffmpeg(basePath)
+  .takeScreenshots({
+    count: 4,
+    folder: './videos/'+id+'/thumbnails/',
+  })
+  .on('start', () => {
+    console.log("Starting");
+  } )
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('end', () => {
+      console.log('... finished taking screenshot of video')
+
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+
+
+
+
+
+
+  // --------------------------------
+  //    135
+  // --------------------------------
+  
+  const _135 = Ffmpeg(basePath)
+  
+  
+  .output("./videos/" + id + "/135.mp4")
+  .format('mp4')
+  .videoBitrate('512k')
+  .videoCodec('libx264')
+  .size('?x135')
+  .audioBitrate('128k')
+  .audioChannels(1)
+  
+  .on('start', () => {
+    console.log('Starting optimization for 135p')
+  })
+  .on('error', (err) => {
+    console.log(err);
+  })
+  .on('progress', (progress) => {
+    if (Math.round(progress.percent) % 10) {
+      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
+    }
+  })
+  .on('end', () => {
+    console.log('... finished processing 135p for - ' + id)
+
+    _thumbnails.run()
+    _720.run()
+
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+  
+
+
+  _135.run()
+  
+  
+
+
+  // --------------------------------
+  //    720
+  // --------------------------------
+
+
+  const _720 = Ffmpeg(basePath)
+  // generate 720p video
+  .output("./videos/" + id + "/720.mp4")
+  .format('mp4')
+  .videoBitrate('1024k')
+  .videoCodec('libx264')
+  .size('?x720')
+  .audioBitrate('128k')
+  .audioChannels(1)
+  
+
+  .on('start', () => {
+    console.log('Starting optimization for 720p')
+  })
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('progress', (progress) => {
+    if (Math.round(progress.percent) % 10) {
+      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
+    }
+  })
+  .on('end', (result) => {
+      console.log('... finished processing 720p for - ' + id)
+
+      _1080.run()
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+
+
+
+
+
   }
+  
   
 
 
