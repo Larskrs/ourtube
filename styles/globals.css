@@ -20,6 +20,9 @@ body {
 
     --blue-100: #111119;
 
+    background-color: black;
+    color: white;
+
 }
 
 a {
@@ -39,6 +42,7 @@ button {
   cursor: pointer;
   font-weight: 700;
   color: white;
+  background-color: #222;
 }
 input[type="text"] {
   border: none;
@@ -56,12 +60,3 @@ input[type="text"]:focus {
   outline: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
-}

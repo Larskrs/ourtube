@@ -44,38 +44,40 @@ function VideoPage({ nextVideo, data, catalog }) {
 
   </Head>
 
-  
-  <nav className={styles.nav}>
-          <Link href={"/"} >Home</Link>
-           {nextVideo && <Link href={"/videos/" + nextVideo.id} >Next Video</Link> }
-  </nav>
+  <div className={styles.container}>
+        <nav className={styles.nav}>
+                <Link href={"/"} >Home</Link>
+                 {nextVideo && <Link href={"/videos/" + nextVideo.id} >Next Video</Link> }
+        </nav>
 
-  <main className={styles.main}>
+        <main className={styles.main}>
+                 <div className={styles.video}>
+                  <VideoPlayer
+                   title={data.title}
+                   id={id}
+                   onEnded={() => {
+                    console.log(data.title);
+                    if (nextVideo) {
+                      router.push("/videos/" + nextVideo.id)
+                    }
+                  }}/>
+                  <h2 style={{textAlign: `left`}}>{data.title}</h2>
 
 
-    <div className={styles.video}>
-            <VideoPlayer id={id} onEnded={() => {
-              console.log(data.title);
-              if (nextVideo) {
-                router.push("/videos/" + nextVideo.id)
-              }
-            }}/>
-            <h2 style={{textAlign: `left`}}>{data.title}</h2>
+                  </div>
+                  <div className={styles.recommended}>
 
-
-            </div>
-            <div className={styles.recommended}>
-              
-            {catalog.data.map((vid) => {
-              return (
-                <Link className={styles.videoComp} key={vid.id} href={"/videos/" + vid.id}>
-                  <Image src={"/api/thumbnail?id=" + vid.id} alt={"Thumbnail"} width={240} height={135}/>
-                  <p>{vid.title}</p>
-                </Link>
-              )
-            })}
-            </div>
-    </main>
+                  {catalog.data.map((vid) => {
+                    return (
+                      <Link className={styles.videoComp} key={vid.id} href={"/videos/" + vid.id}>
+                        <Image src={"/api/thumbnail?id=" + vid.id} alt={"Thumbnail"} width={240} height={135}/>
+                        <p>{vid.title}</p>
+                      </Link>
+                    )
+                  })}
+                  </div>
+          </main>
+    </div>
   </>
 }
 export const getServerSideProps = async (context) => {

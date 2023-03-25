@@ -59,7 +59,7 @@ function optimizeVideo (fileName, stream) {
   console.log({fileName, basePath, dir, baseName, id})
 
   console.log(`./videos/${id}/`)
-  fs.mkdirSync(`./videos/${id}/`)
+
   
 
 
@@ -106,22 +106,20 @@ function optimizeVideo (fileName, stream) {
     console.log(err);
   })
   .on('progress', (progress) => {
-    // console.log('... frames: ' + progress.frames)
+    if (Math.round(progress.percent) % 10) {
+      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
+    }
   })
   .on('end', () => {
-    console.log('... finished processing video')
-    
-    _720.run()
-    _thumbnails.run()
+    console.log('... finished processing 135p for - ' + id)
   })
   .setFfmpegPath(process.env.FFMPEG_PATH)
   
 
 
 
-  _135.run()
-
-
+  
+  
 
 
   // --------------------------------
@@ -133,8 +131,9 @@ function optimizeVideo (fileName, stream) {
   // generate 720p video
   .output("./videos/" + id + "/720.mp4")
   .videoCodec('libx264')
+  .videoBitrate(1000)
   .setSize("?x720").autoPad()
-
+  
 
   .on('start', () => {
     console.log('Starting optimization for 720p')
@@ -143,13 +142,12 @@ function optimizeVideo (fileName, stream) {
     console.error(err);
   })
   .on('progress', (progress) => {
-    // console.log('... frames: ' + progress.frames)
+    if (Math.round(progress.percent) % 10) {
+      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
+    }
   })
   .on('end', (result) => {
-      console.log('... finished processing video')
-
-      console.log({result})
-      _1080.run()
+      console.log('... finished processing 720p for - ' + id)
   })
   .setFfmpegPath(process.env.FFMPEG_PATH)
   
@@ -176,10 +174,13 @@ function optimizeVideo (fileName, stream) {
     console.error(err);
   })
   .on('progress', (progress) => {
-    // console.log('... frames: ' + progress.frames)
+    if (Math.round(progress.percent) % 10) {
+      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
+    }
+
   })
   .on('end', () => {
-      console.log('... finished processing video')
+    console.log('... finished processing 1080p for - ' + id)
       fs.unlinkSync(basePath)
       
       const timeTaken = (new Date().getTime() - startTime)
@@ -196,12 +197,18 @@ function optimizeVideo (fileName, stream) {
 
       
       
-  })
-  .setFfmpegPath(process.env.FFMPEG_PATH)
+    })
+    .setFfmpegPath(process.env.FFMPEG_PATH)
+    fs.mkdir(`./videos/${id}/`, () => {
+
+      _135.run()
+      _720.run()
+      _1080.run()
+      _thumbnails.run()
+      
+    })
+  }
   
-
-}
-
 
 
 
