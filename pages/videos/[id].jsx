@@ -82,7 +82,7 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
 
                           <p className={styles.video_title}>{shortTxt(vid.title, 40)}</p>
                           <p className={styles.time}>{getTimeAgo(vid.created_at)}</p>
-                          <p>Larskrs</p>
+                          {/* <p>Larskrs</p> */}
                         
                         </div>
                       </Link>
