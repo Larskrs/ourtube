@@ -89,24 +89,25 @@ export const getServerSideProps = async (context) => {
   const id = context.query.id;
   const random = await (await getRandomVideo([id])).data
   const data = (await supabase.from("videos").select("*").eq("id", id).single()).data
-
-    const catalog = await getRandomVideos(25)
-
-    if (!data) {
-      return {
-        redirect: {
-          destination: "/videos/" + random.id,
-          permanent: false
-        }
+  
+  const catalog = await getRandomVideos(25)
+  
+  if (!data) {
+    return {
+      redirect: {
+        destination: "/videos/" + random.id,
+        permanent: false
       }
     }
+  }
 
   return {
     props: {
         query: context.query,
         nextVideo: random,
         data,
-        catalog
+        catalog,
+
       },
   };
 };

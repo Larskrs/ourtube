@@ -74,6 +74,7 @@ function VideoUpload() {
       source: "/api/videos?videoId=" + id,
       title: title,
       storage: process.env.NEXT_PUBLIC_STORAGE_ID,
+      tags: tags,
     })
     .select("*")
     
@@ -92,6 +93,9 @@ function VideoUpload() {
     if (!file) { return false;}
     if (!link) { return false;} 
     if (!title) { return false;}
+    if (!tags) { return false}
+    if (tags.length <= 0) { return false;}
+    
     return true;
   }
 
@@ -105,13 +109,21 @@ function VideoUpload() {
         {error && <p>{error}</p>}
         {submitting && <p>{progress}%</p>}
         {submitting && <progress hidden={!submitting} value={progress} max={100} />}
-        <form className="form" action="POST">
+        {!id && <form className="form" action="POST">
           <div>
             <label htmlFor="file">File</label>
             <input type="file" id="file" accept=".mp4" onChange={handleSetFile} />
           </div>
         </form>
-        <button disabled={!file} className={"upload"} onClick={handleSubmit}>Upload video</button>
+        }
+        {id && !submitting && <>
+            <div style={{minWidth: `400px`, maxWidth: `400px`, background: `var(--gray-100)`, padding: `.5rem`, borderRadius: `10px`, border: `1px solid var(--gray-300)`}}>
+             <VideoPlayer id={id} title={title} onEnded={() => {}} />
+            </div>
+          </>
+        }
+        
+        {!id && file && <button style={{maxWidth: `200px`}} disabled={id} className={"upload"} onClick={handleSubmit}>Upload video</button> }
 
       <div className="form">
         <form>
@@ -124,10 +136,18 @@ function VideoUpload() {
           {tagInput && <button onClick={() => {if (tagInput) {handleTagAdd()}}}>Add</button> }
         </div>
         <div className="tag_container">
-          {tags.map(tag => <span className="tag" onClick={() => {handleRemoveTag(tag)}} >{tag} <img style={{filter: `invert()`, opacity: `.75`}} src="/icons/thick/cross.svg"></img> </span>)}
+          {tags.map(tag => <span key={tag.id} className="tag" onClick={() => {handleRemoveTag(tag)}} >{tag}  </span>)}
         </div>
 
-        {!published && <button disabled={!canPublish()} onClick={handlePublish} className={"publish"}>Publish</button>}
+        <br />
+        <p className="seperator">Publishing Settings</p>
+        
+        {!published && <>
+          <button disabled={!canPublish()} onClick={handlePublish} className={"publish"}>Publish</button>
+
+          {/* <button className="visability" ><img src="/icons/thick/circle.svg"></img>Public</button> */}
+          
+          </>}
         {published && <Link style={{color: `aquamarine`}} href={link}>{link}</Link>}
         {/* {id && link && <VideoPlayer onEnded={() => {}} id={id} />} */}
       </div>
@@ -136,34 +156,39 @@ function VideoUpload() {
 
       <style jsx>{`
 
-        .tag_container {
+        .visability {
           display: flex;
-          flex: 1 1 auto;
-          flex-flow: column wrap;
-          align-content: flex-start;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+        }
+
+        .tag_container {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, 140px);
+          gap: .5rem;
+
         }
         .tag {
           text-align: center;
           border-radius: 1rem;
           background: var(--gray-200);
-          padding: 10px;
-          font-size: 12px;
+          padding: 10px 15px;
+          font-size: 16px;
           color: var(--gray-900);
           cursor: pointer;
           display: flex;
           align-items: center;
           gap: 0.25rem;
           transition: all 100ms cubic-bezier(0,1.5,1,1.5);
+          animation: show 100ms cubic-bezier(0,1.5,1,1.5)
         }
         .tag:hover {
-          scale: 1.1;
           rotate: 2deg;
+          scale: 0.95
         }
-        .tag img {
-          width: 15px;
-          height: 15px;
-          aspect-ratio: 1/1;
-          flex: 1;
+        .tag:focus {
+          sclale: 2;
         }
         .seperator {
           color: #777;
@@ -171,29 +196,36 @@ function VideoUpload() {
 
         .upload {
           transition: all 0.1s;
-          background: var(--gray-200)
+          background: var(--gray-200);
           color: white;
+          border: 1px solid var(--gray-500);
         }
         .upload:disabled {
-          background: transparent;
+          background: var(--gray-400);
           scale: 1.5;
         }
         .upload:hover:not(.upload:disabled) {
           background: #5448C8;
+          border: 1px solid transparent;
         }
         .publish {
           border: none;
           border-radius: 10px;
           padding: 10px 50px;
+          font-size: 16px;
           font-weight: 700;
+          max-width: 200px;
           cursor: pointer;
           background: #5448C8;
-          transition: all 0.1s;
+          transition: all 100ms cubic-bezier(0,1,1,1);
           color: white;
         }
         .publish:disabled {
           background: transparent;
-          scale: 1.5;
+          scale: 2;
+          color: var(--gray-500);
+          font-weight: 100;
+          opacity: 0.2
         }
         .main {
           display: flex;
@@ -217,6 +249,17 @@ function VideoUpload() {
           width: 200px
         }
 
+        @keyframes show {
+          0% {
+            opacity: 0;
+            scale: 0;
+          }
+          100% {
+            opacity: 1;
+            scale: 1;
+          }
+        }
+
       `}</style>
 
       </>
@@ -234,8 +277,8 @@ function VideoUpload() {
     if (tags.length > max_tags) { return; }
 
     const { data, error } = await supabase.from("video_tags")
-    .select("id")
-    .eq("id", tagInput)
+    .select("text_id")
+    .eq("text_id", tagInput.toLowerCase())
 
     console.log({data, error})
     
@@ -245,7 +288,7 @@ function VideoUpload() {
     if (!data) { return; }
     if (data.length == 0) { return; }
     
-    setTags([...tags, tagInput])
+    setTags([...tags, tagInput.toLowerCase()])
   }
   async function handleRemoveTag (tag) {
     const filteredArray = tags.filter(str => str !== tag);
