@@ -14,7 +14,8 @@ function VideoUpload() {
   const [title, setTitle] = useState("")
   const [id, setId] = useState("")
   const [published, setPublished] = useState(false)
-
+  const [tags, setTags] = useState([])
+  const [tagInput, setTagInput] = useState("")
 
   async function handleSubmit() {
     const data = new FormData();
@@ -114,9 +115,18 @@ function VideoUpload() {
 
       <div className="form">
         <form>
-          <label htmlFor="title">Video Title</label>
+          <label className="seperator" htmlFor="title">Video Title</label>
           <input placeholder="This is my title..." autoComplete="off" type="text" id="title" onChange={(event) => {setTitle(event.target.value)}} />
         </form>
+        <p className="seperator">Video tags</p>
+        <div style={{gap: `.25rem`, display: "flex"}}>
+          <input type="text" id="title" placeholder="tag..." autoComplete="off=" onChange={(event) => setTagInput(event.target.value)} />
+          {tagInput && <button onClick={() => {if (tagInput) {handleTagAdd()}}}>Add</button> }
+        </div>
+        <div className="tag_container">
+          {tags.map(tag => <span className="tag" onClick={() => {handleRemoveTag(tag)}} >{tag} <img style={{filter: `invert()`, opacity: `.75`}} src="/icons/thick/cross.svg"></img> </span>)}
+        </div>
+
         {!published && <button disabled={!canPublish()} onClick={handlePublish} className={"publish"}>Publish</button>}
         {published && <Link style={{color: `aquamarine`}} href={link}>{link}</Link>}
         {/* {id && link && <VideoPlayer onEnded={() => {}} id={id} />} */}
@@ -125,6 +135,39 @@ function VideoUpload() {
 
 
       <style jsx>{`
+
+        .tag_container {
+          display: flex;
+          flex: 1 1 auto;
+          flex-flow: column wrap;
+          align-content: flex-start;
+        }
+        .tag {
+          text-align: center;
+          border-radius: 1rem;
+          background: var(--gray-200);
+          padding: 10px;
+          font-size: 12px;
+          color: var(--gray-900);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          transition: all 100ms cubic-bezier(0,1.5,1,1.5);
+        }
+        .tag:hover {
+          scale: 1.1;
+          rotate: 2deg;
+        }
+        .tag img {
+          width: 15px;
+          height: 15px;
+          aspect-ratio: 1/1;
+          flex: 1;
+        }
+        .seperator {
+          color: #777;
+        }
 
         .upload {
           transition: all 0.1s;
@@ -159,7 +202,11 @@ function VideoUpload() {
           background: var(--form);
           border-radius: 10px;
           padding: 10px;
+          min-width: 50%;
           
+        }
+        input {
+          width: auto;
         }
         .form  {
           display: flex;
@@ -174,6 +221,37 @@ function VideoUpload() {
 
       </>
   );
+
+  async function handleTagAdd () {
+
+    console.log('attempting to add tag')
+
+    if (tags.includes(tagInput)) { return; }
+
+    console.log("tag is not added yet.")
+
+    const max_tags = 5;
+    if (tags.length > max_tags) { return; }
+
+    const { data, error } = await supabase.from("video_tags")
+    .select("id")
+    .eq("id", tagInput)
+
+    console.log({data, error})
+    
+  
+    if (error) { return; }
+
+    if (!data) { return; }
+    if (data.length == 0) { return; }
+    
+    setTags([...tags, tagInput])
+  }
+  async function handleRemoveTag (tag) {
+    const filteredArray = tags.filter(str => str !== tag);
+    console.log({filteredArray})
+    setTags(filteredArray);
+  }
 }
 
 export default VideoUpload;
