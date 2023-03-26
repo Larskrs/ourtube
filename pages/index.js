@@ -2,7 +2,6 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
-import VideoUpload from '../components/UploadVideo'
 import Link from 'next/link'
 import { getRandomVideo } from '../lib/catalog'
 
@@ -17,9 +16,12 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <VideoUpload />
-        <Link className={styles.link} href={"/roulette"} >Roulette</Link>
-        <Link className={styles.link} href={"/videos"} >Videos</Link>
+        <h1>Clumsyturtle Videos <span style={{background: `purple`, padding: `0px 10px`,fontSize: `20px`, borderRadius: `20px`}}>A021</span></h1>
+        <p>We have moved the upload screen to its own page. Click on the link below to go there.</p>
+        <div style={{gap: `1rem`, display: `flex`}}>
+          <Link href={"/upload"} className={styles.link}>Uploader</Link>
+          <Link className={styles.link} href={"/videos"} >Videos</Link>
+        </div>
       </main>
     </div>
 

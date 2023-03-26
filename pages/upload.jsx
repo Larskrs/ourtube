@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { uuidv4 } from "uuid"
 import Link from "next/link";
 import supabase from "../lib/Supabase";
-import VideoPlayer from "./VideoPlayer";
+import VideoPlayer from "../components/VideoPlayer";
 
 function VideoUpload() {
   const [file, setFile] = useState();
@@ -16,6 +16,7 @@ function VideoUpload() {
   const [published, setPublished] = useState(false)
   const [tags, setTags] = useState([])
   const [tagInput, setTagInput] = useState("")
+  const [fileTempUrl, setFileTempUrl] = useState("")
 
   async function handleSubmit() {
     const data = new FormData();
@@ -55,6 +56,8 @@ function VideoUpload() {
   
   function handleSetFile(event) {
     const files = event.target.files;
+
+    setFileTempUrl(URL.createObjectURL(files[0]))
     
     if (files?.length) {
       setFile(files[0]);
@@ -101,6 +104,7 @@ function VideoUpload() {
 
   return (
     <>
+    
     <div className="main">
 
         <h3>Video Publisher</h3>
@@ -115,6 +119,11 @@ function VideoUpload() {
             <input type="file" id="file" accept=".mp4" onChange={handleSetFile} />
           </div>
         </form>
+        }
+        {file && fileTempUrl && !id &&  
+          <div style={{minWidth: `400px`, maxWidth: `400px`, background: `var(--gray-100)`, padding: `.5rem`, borderRadius: `10px`, border: `1px solid var(--gray-300)`, display: `flex`}}>
+            <video controls autoplay style={{display: `flex`, width: `100%`}} src={fileTempUrl} />
+         </div>
         }
         {id && !submitting && <>
             <div style={{minWidth: `400px`, maxWidth: `400px`, background: `var(--gray-100)`, padding: `.5rem`, borderRadius: `10px`, border: `1px solid var(--gray-300)`}}>
@@ -172,20 +181,22 @@ function VideoUpload() {
         .tag {
           text-align: center;
           border-radius: 1rem;
-          background: var(--gray-200);
-          padding: 10px 15px;
+          background: var(--gray-300);
+          padding: 5px 10px;
           font-size: 16px;
-          color: var(--gray-900);
+          color: white;
           cursor: pointer;
           display: flex;
           align-items: center;
           gap: 0.25rem;
-          transition: all 100ms cubic-bezier(0,1.5,1,1.5);
+          font-weight: 500;
+          border: 2px solid transparent;
+          transition: scale 100ms cubic-bezier(0,1.5,1,1.5);
           animation: show 100ms cubic-bezier(0,1.5,1,1.5)
         }
         .tag:hover {
-          rotate: 2deg;
-          scale: 0.95
+          scale: 0.95;
+          border: 2px solid var(--gray-400);
         }
         .tag:focus {
           sclale: 2;
@@ -231,10 +242,11 @@ function VideoUpload() {
           display: flex;
           flex-direction: column;
           gap: 0.5rem;
-          background: var(--form);
-          border-radius: 10px;
-          padding: 10px;
+          background: black;
+          padding: 30px;
           min-width: 50%;
+          height: 100vh;
+          width: 100vw;
           
         }
         input {

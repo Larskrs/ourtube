@@ -8,9 +8,9 @@ import Image from "next/image";
 import styles from "../../styles/Videos.module.css"
 import Head from "next/head";
 import { useEffect } from "react";
-import { shortTxt } from "../../lib/TextLib";
+import { shortTxt, getTimeAgo } from "../../lib/TextLib";
 
-function VideoPage({ nextVideo, data, catalog }) {
+function VideoPage({ nextVideo, data, catalog, tags }) {
   const router = useRouter();
 
   const { id } = router.query;
@@ -62,8 +62,14 @@ function VideoPage({ nextVideo, data, catalog }) {
                       router.push("/videos/" + nextVideo.id)
                     }
                   }}/>
-                  <h2 style={{textAlign: `left`}}>{shortTxt(data.title, 75)}</h2>
 
+                  <div className={styles.info}>
+                  <h2 style={{textAlign: `left`}}>{shortTxt(data.title, 75)}</h2>
+                  {tags && <div style={{gap: `.25rem`, display: `flex`}}>{tags.data.map((tag) => {
+                    return (<Link key={tag.id} className={styles.tag} href={"/tags/" + tag.text_id}>{tag.name}</Link>)
+                  })}</div>
+                  }
+                </div>
 
                   </div>
                   <div className={styles.recommended}>
@@ -72,7 +78,13 @@ function VideoPage({ nextVideo, data, catalog }) {
                     return (
                       <Link className={styles.videoComp} key={vid.id} href={"/videos/" + vid.id}>
                         <Image src={"/api/thumbnail?id=" + vid.id} alt={"Thumbnail"} width={240} height={135}/>
-                        <p>{shortTxt(vid.title, 60)}</p>
+                        <div className={styles.info}>
+
+                          <p className={styles.video_title}>{shortTxt(vid.title, 40)}</p>
+                          <p className={styles.time}>{getTimeAgo(vid.created_at)}</p>
+                          <p>Larskrs</p>
+                        
+                        </div>
                       </Link>
                     )
                   })}
@@ -101,13 +113,19 @@ export const getServerSideProps = async (context) => {
     }
   }
 
+  let tags = null;
+  if (data.tags) {
+    tags = await supabase.from('video_tags').select("*").in("text_id", data.tags)
+    console.log({tags: tags.data})
+    
+  }
   return {
     props: {
         query: context.query,
         nextVideo: random,
         data,
         catalog,
-
+        tags,
       },
   };
 };

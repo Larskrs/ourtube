@@ -97,10 +97,10 @@ function VideoPlayer({ id, onEnded, title }) {
 
             </div> */}
           </div>
-          <div>
-              <button onClick={() => setQuality(1080)}>1080p</button>
-              <button onClick={() => setQuality(720)}>720p</button>
-              <button onClick={() => setQuality(135)}>Stupid</button>
+          <div style={{display: `flex`, gap: `.25rem`, width: `100%`, margin: `0`}}>
+              <button style={quality == 1080 ? {outline: `2px solid #5448C8`} : {}} onClick={() => setQuality(1080)}>1080p</button>
+              <button style={quality == 720 ? {outline: `2px solid #5448C8`} : {}}onClick={() => setQuality(720)}>720p</button>
+              <button style={quality == 135 ? {outline: `2px solid #5448C8`} : {}}onClick={() => setQuality(135)}>Stupid</button>
           </div>
         </div>
 
