@@ -66,57 +66,183 @@ function optimizeVideo (fileName, stream) {
   fs.mkdirSync(`./videos/${id}/`)
 
 
-  createVideos()
 
-  async function createVideos(){
-      console.log("Starting video...")
-      const data = await readVideo(basePath);
-      const size = {width: data.streams[0].width, height: data.streams[0].height}
-      console.log({data, size})
+  // --------------------------------
+  //    1080
+  // --------------------------------
 
-      await createVideo(basePath, id, size)
-      await createVideo(basePath, id, {width: size.width, height: size.height / 2})
-      await createVideo(basePath, id, {width: size.width, height: size.height / 4})
-      await createVideo(basePath, id, {width: size.width, height: size.height / 8})
-      deleteOriginalVideo(basePath)
-  }
-  function createVideo(basePath, id, size) {
 
-    console.log("Handling video...")
-    console.log({size})
+  const _1080 =  Ffmpeg(basePath)
+
+  // generate full HD video
+  .output("./videos/" + id + "/1080.mp4")
+  .format('mp4')
+  // .videoBitrate('2048k')
+  .videoCodec('libx264')
+  .size('?x1920')
+  .audioBitrate('128k')
+  .audioChannels(1)
+
+  .on('start', () => {
+    console.log('Starting optimization for 1080p')
+  })
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('progress', (progress) => {
+    return;
+    if (Math.round(progress.percent) % 25) {
+      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
+    }
     
 
-    return new Promise((resolve,reject)=>{
-      Ffmpeg(basePath)
-      .size(`?x${size.height}`)
-      .videoBitrate("200k")
-      .save(`./videos/${id}/${size.height}.mp4`)
-      .on('err',(err)=>{
-          return reject(err)
-      })
-      .on('end',(fim)=>{
-          return resolve()
-      })
+  })
+  .on('end', () => {
+    console.log('... finished processing 1080p for - ' + id)
+      fs.unlinkSync(basePath)
+      
+      const timeTaken = (new Date().getTime() - startTime)
+      console.log('... deleting original video file')
+      console.log('|-------------------------------------')
+      console.log('                                      ')
+      console.log('      Finished Optimization           ')
+      console.log('      Time: '+timeTaken+ 'ms          ')
+      console.log('      Time: '+timeTaken  / 1000 + 's  ')
+      console.log('                                      ')
+      console.log(`      Video: ${id}                    `)
+      console.log('                                      ')
+      console.log('|------------------------------------|')
+
+
+
+      
+      
     })
+    .setFfmpegPath(process.env.FFMPEG_PATH)
+
+
+
+
+    // ----------------------------------------------------------------
+  // THumbnails
+  // ----------------------------------------------------------------
+
+  const _thumbnails = Ffmpeg(basePath)
+  .takeScreenshots({
+    count: 4,
+    folder: './videos/'+id+'/thumbnails/',
+  })
+  .on('start', () => {
+    console.log("Starting");
+  } )
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('end', () => {
+      console.log('... finished taking screenshot of video')
+
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+
+
+
+
+
+
+  // --------------------------------
+  //    135
+  // --------------------------------
+  
+  const _135 = Ffmpeg(basePath)
+  
+  
+  .output("./videos/" + id + "/135.mp4")
+  .format('mp4')
+  .videoBitrate('512k')
+  .videoCodec('libx264')
+  .size('?x135')
+  .audioBitrate('128k')
+  .audioChannels(1)
+  
+  .on('start', () => {
+    console.log('Starting optimization for 135p')
+  })
+  .on('error', (err) => {
+    console.log(err);
+  })
+  .on('progress', (progress) => {
+    return;
+    if (Math.round(progress.percent) % 25) {
+      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
+    }
+  })
+  .on('end', () => {
+    console.log('... finished processing 135p for - ' + id)
+
+    _thumbnails.run()
+    _720.run()
+
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+  
+
+
+  _135.run()
+  
+  
+
+
+  // --------------------------------
+  //    720
+  // --------------------------------
+
+
+  const _720 = Ffmpeg(basePath)
+  // generate 720p video
+  .output("./videos/" + id + "/720.mp4")
+  .format('mp4')
+  .videoBitrate('1024k')
+  .videoCodec('libx264')
+  .size('?x720')
+  .audioBitrate('128k')
+  .audioChannels(1)
+  
+
+  .on('start', () => {
+    console.log('Starting optimization for 720p')
+  })
+  .on('error', (err) => {
+    console.error(err);
+  })
+  .on('progress', (progress) => {
+    return;
+    if (progress.percent % 25) {
+      console.log('... Video: ' + id + " - " + Math.round(progress.percent))
+    }
+  })
+  .on('end', (result) => {
+      console.log('... finished processing 720p for - ' + id)
+
+      _1080.run()
+  })
+  .setFfmpegPath(process.env.FFMPEG_PATH)
+
+
+
+
+
   }
-  function deleteOriginalVideo (basePath) {
-    console.log("Preparing to delete original video...")
-    fs.unlinkSync(basePath)
-  }
-  function readVideo(basePath){
-      return new Promise((resolve,reject)=>{
-          Ffmpeg(basePath)
-          .ffprobe((err, data) => {
-            if (err) {
-              return reject(err)
-            }
-            return resolve(data)
-          })
-      })
-  }
+  
+  
+
+
+
+function getVideoSize (id ,basePath) {
+
 
 
 }
+
 
 
 
