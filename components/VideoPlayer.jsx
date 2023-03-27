@@ -128,7 +128,7 @@ function VideoPlayer({ id, onEnded, title }) {
               align-items: center;
               flex-wrap: wrap;
               background-color: #3333301;
-              z-index: 2147483647;
+              z-index: 9;
               animation: linear 2s hide;
               pointer-events: all;
               font-size: 10px;
@@ -179,7 +179,7 @@ function VideoPlayer({ id, onEnded, title }) {
             }
             .video-player {
               position: relative;
-              z-index: 999;
+              z-index: 9;
               display: flex;
               align-items: center;
               justify-content: center;

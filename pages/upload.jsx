@@ -4,6 +4,7 @@ import { uuidv4 } from "uuid"
 import Link from "next/link";
 import supabase from "../lib/Supabase";
 import VideoPlayer from "../components/VideoPlayer";
+import BaseLayout from "../layouts/BaseLayout";
 
 function VideoUpload() {
   const [file, setFile] = useState();
@@ -104,7 +105,7 @@ function VideoUpload() {
 
   return (
     <>
-    
+    <BaseLayout>
     <div className="main">
 
         <h3>Video Publisher</h3>
@@ -161,14 +162,15 @@ function VideoUpload() {
         {/* {id && link && <VideoPlayer onEnded={() => {}} id={id} />} */}
       </div>
     </div>
+    </BaseLayout>
 
 
       <style jsx>{`
 
-        .visability {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+.visability {
+  display: flex;
+  align-items: center;
+  justify-content: center;
           gap: 1rem;
         }
 
@@ -243,10 +245,10 @@ function VideoUpload() {
           flex-direction: column;
           gap: 0.5rem;
           background: black;
-          padding: 30px;
+          padding: 1rem;
           min-width: 50%;
           height: 100vh;
-          width: 100vw;
+          width: 100%;
           
         }
         input {

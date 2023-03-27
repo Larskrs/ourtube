@@ -4,10 +4,12 @@ import styles from '../styles/Home.module.css'
 
 import Link from 'next/link'
 import { getRandomVideo } from '../lib/catalog'
+import BaseLayout from '../layouts/BaseLayout'
 
 export default function Home() {
   return (
     <>
+    <BaseLayout>
     <div className={styles.container}>
       <Head>
         <title>OurTube</title>
@@ -25,6 +27,7 @@ export default function Home() {
       </main>
     </div>
 
+    </BaseLayout>
     </>
   )
 }

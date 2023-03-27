@@ -9,6 +9,7 @@ import styles from "../../styles/Videos.module.css"
 import Head from "next/head";
 import { useEffect } from "react";
 import { shortTxt, getTimeAgo } from "../../lib/TextLib";
+import BaseLayout from "../../layouts/BaseLayout";
 
 function VideoPage({ nextVideo, data, catalog, tags }) {
   const router = useRouter();
@@ -44,12 +45,8 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
     <meta name="twitter:player:stream:content_type" content="video/mp4" />
 
   </Head>
-
-  <div className={styles.container}>
-        <nav className={styles.nav}>
-                <Link href={"/"} >Home</Link>
-                 {nextVideo && <Link href={"/videos/" + nextVideo.id} >Next Video</Link> }
-        </nav>
+  <BaseLayout>
+    <div className={styles.container}>
 
         <main className={styles.main}>
                  <div className={styles.video}>
@@ -68,7 +65,7 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
                   {tags && <div style={{gap: `.25rem`, display: `flex`}}>{tags.data.map((tag) => {
                     return (<Link key={tag.id} className={styles.tag} href={"/tags/" + tag.text_id}>{tag.name}</Link>)
                   })}</div>
-                  }
+                }
                 </div>
 
                   </div>
@@ -91,12 +88,13 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
                   </div>
           </main>
     </div>
+    </BaseLayout>
   </>
 }
 
 
 export const getServerSideProps = async (context) => {
-
+  
   
   const id = context.query.id;
   const random = await (await getRandomVideo([id])).data
