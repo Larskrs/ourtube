@@ -1,10 +1,21 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { shortTxt } from "../lib/TextLib";
 
-function VideoPlayer({ id, onEnded, title }) {
+function VideoPlayer({ id, onEnded, title, qualities=[360] }) {
 
-    const [quality, setQuality] = useState(135);
+  
+    const [quality, setQuality] = useState(360);
     const [progress, setProgress] = useState(0)
+    useEffect(() => {
+      if (qualities) {
+        setQuality(qualities[qualities.length - 1])
+      }
+    })
+
+    console.log({qualities})
+
+    
 
     useEffect(() => {
       const vd = document.getElementById('video');
@@ -54,12 +65,12 @@ function VideoPlayer({ id, onEnded, title }) {
 
     }, [])
 
-
+    
 
     const source = `/api/videos?videoId=${id}&quality=${quality}`
     return (
 
-      <>
+      <div>
 
       <div id={"video-player"} className="video-player" style={{display: `flex`, flexDirection: `column`, gap: `1rem`}}>
 
@@ -98,9 +109,11 @@ function VideoPlayer({ id, onEnded, title }) {
             </div> */}
           </div>
           <div style={{display: `flex`, gap: `.25rem`, width: `100%`, margin: `0`}}>
-              <button style={quality == 1080 ? {outline: `2px solid #5448C8`} : {}} onClick={() => setQuality(1080)}>1080p</button>
-              <button style={quality == 720 ? {outline: `2px solid #5448C8`} : {}}onClick={() => setQuality(720)}>720p</button>
-              <button style={quality == 135 ? {outline: `2px solid #5448C8`} : {}}onClick={() => setQuality(135)}>Stupid</button>
+            {qualities.map((q) => {
+              return (
+                <button style={quality == q ? {outline: `2px solid #5448C8`} : {}} onClick={() => setQuality(q)}>{q}p</button>
+              )
+            })}
           </div>
         </div>
 
@@ -197,7 +210,7 @@ function VideoPlayer({ id, onEnded, title }) {
 
           `}</style>
 
-          </>
+          </div>
     )
 
     function handleFullScreen(event) {

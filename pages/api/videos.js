@@ -45,6 +45,7 @@ function uploadVideoStream(req, res) {
 
 
 import Ffmpeg from "fluent-ffmpeg";
+import supabase from "../../lib/Supabase";
 
 
 
@@ -72,33 +73,85 @@ function optimizeVideo (fileName, stream) {
       console.log("Starting video...")
       const data = await readVideo(basePath);
       const size = {width: data.streams[0].width, height: data.streams[0].height}
-      console.log({data, size})
+      console.log({original_size: size})
 
-      await createVideo(basePath, id, size)
-      await createVideo(basePath, id, {width: size.width, height: size.height / 2})
-      await createVideo(basePath, id, {width: size.width, height: size.height / 4})
-      await createVideo(basePath, id, {width: size.width, height: size.height / 8})
-      deleteOriginalVideo(basePath)
+      console.log("Uploading to database...")
+      const select = await supabase.from("videos")
+        .insert({
+          id: id,
+          source: "/api/videos?videoId=" + id,
+          title: "",
+          storage: process.env.NEXT_PUBLIC_STORAGE_ID,
+        })
+        .select("*")
+        console.log({select: (await select).data})
+
+        let qualities = []
+        
+        let possible = [360, 480, 540, 720, 1080, 1920 ]
+        possible = possible.filter(function (i) {
+          return i <= size.height;
+        })
+        console.log({possible})
+        await captureScreenshots(basePath, id)
+
+        for (let i = 0; i < possible.length; i++) {
+          const el = possible[i];
+          console.log({el})
+          await createVideo ( basePath, id, el)
+        }
+
+      // deleteOriginalVideo(basePath)
+
+      function createVideo(basePath, id, height) {
+
+        console.log(`[Handling Video] id: (${id}) - ${height}p `)
+        console.log({height})
+        
+    
+        return new Promise((resolve,reject)=>{
+          Ffmpeg(basePath)
+          .size(`?x${height}`)
+          .videoBitrate("200k")
+          .save(`./videos/${id}/${height}.mp4`)
+          .on('err',(err)=>{
+              return reject(err)
+          })
+          .on('end', async (fim)=>{
+            qualities.push(height)
+            const update = await supabase.from("videos")
+            .update({quality: qualities})
+            .eq("id", id)
+            .select("*")
+            
+            console.log(update)
+              return resolve()
+          })
+        })
+      }
   }
-  function createVideo(basePath, id, size) {
 
-    console.log("Handling video...")
-    console.log({size})
+  function captureScreenshots(basePath, id) {
+
+    console.log(`[Handling Video] id: (${id}) - Screenshots `)
     
 
     return new Promise((resolve,reject)=>{
       Ffmpeg(basePath)
-      .size(`?x${size.height}`)
-      .videoBitrate("200k")
-      .save(`./videos/${id}/${size.height}.mp4`)
+      .screenshots({
+        count: 4,
+        folder: './videos/'+id+'/thumbnails/',
+      })
       .on('err',(err)=>{
           return reject(err)
       })
-      .on('end',(fim)=>{
+      .on('end', async (fim)=>{
           return resolve()
       })
     })
   }
+
+  
   function deleteOriginalVideo (basePath) {
     console.log("Preparing to delete original video...")
     fs.unlinkSync(basePath)

@@ -73,13 +73,12 @@ function VideoUpload() {
     
     
     const {data, error} = await supabase.from("videos")
-    .insert({
-      id: id,
+    .update({
       source: "/api/videos?videoId=" + id,
       title: title,
-      storage: process.env.NEXT_PUBLIC_STORAGE_ID,
       tags: tags,
     })
+    .eq("id", id)
     .select("*")
     
 

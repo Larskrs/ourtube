@@ -7,12 +7,16 @@ import { getRandomVideo, getRandomVideos } from "../../lib/catalog"
 import Image from "next/image";
 import styles from "../../styles/Videos.module.css"
 import Head from "next/head";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { shortTxt, getTimeAgo } from "../../lib/TextLib";
 import BaseLayout from "../../layouts/BaseLayout";
 
 function VideoPage({ nextVideo, data, catalog, tags }) {
+  const [count, setCount] = useState(0)
   const router = useRouter();
+  useEffect(() => {
+    setCount(0)
+  }, [router.query.slug])
 
   const { id } = router.query;
   
@@ -53,6 +57,7 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
                   <VideoPlayer
                    title={data.title}
                    id={id}
+                   qualities={(data.quality ? data.quality : [0])}
                    onEnded={() => {
                     console.log(data.title);
                     if (nextVideo) {
@@ -63,7 +68,7 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
                   <div className={styles.info}>
                   <h2 style={{textAlign: `left`}}>{shortTxt(data.title, 75)}</h2>
                   {tags && <div style={{gap: `.25rem`, display: `flex`}}>{tags.data.map((tag) => {
-                    return (<Link key={tag.id} className={styles.tag} href={"/tags/" + tag.text_id}>{tag.name}</Link>)
+                    return (<Link href={"/tags/" + tag.text_id} key={tag.id} className={styles.tag}>{tag.name}</Link>)
                   })}</div>
                 }
                 </div>
