@@ -221,12 +221,8 @@ function getVideoStream(req, res) {
   const videoId = req.query.videoId;
   let quality = req.query.quality;
   if (!quality) { quality = "135"}
-  console.log({quality})
 
   let filePath = `./videos/${videoId}/${quality}.mp4`;
-
-
-  console.log({filePath})
   
 
 
