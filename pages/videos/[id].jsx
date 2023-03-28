@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import VideoPlayer from "../../components/VideoPlayer";
 import supabase from "../../lib/Supabase";
-import { getRandomVideo, getRandomVideos } from "../../lib/catalog"
+import { getRandomVideo, getRandomVideos, getVideoPaths } from "../../lib/catalog"
 import Image from "next/image";
 import styles from "../../styles/Videos.module.css"
 import Head from "next/head";
@@ -55,11 +55,11 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
         <main className={styles.main}>
                  <div className={styles.video}>
                   <VideoPlayer
+                   key={id}
                    title={data.title}
                    id={id}
-                   qualities={(data.quality ? data.quality : [0])}
+                   qualities={data.quality ? (data.quality) : []}
                    onEnded={() => {
-                    console.log(data.title);
                     if (nextVideo) {
                       router.push("/videos/" + nextVideo.id)
                     }
@@ -78,7 +78,7 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
 
                   {catalog.data.map((vid) => {
                     return (
-                      <Link className={styles.videoComp} key={vid.id} href={"/videos/" + vid.id}>
+                      <Link className={styles.videoComp} replace key={vid.id} href={"/videos/" + vid.id}>
                         <Image src={"/api/thumbnail?id=" + vid.id} alt={"Thumbnail"} width={240} height={135}/>
                         <div className={styles.info}>
 
@@ -119,12 +119,10 @@ export const getServerSideProps = async (context) => {
   let tags = null;
   if (data.tags) {
     tags = await supabase.from('video_tags').select("*").in("text_id", data.tags)
-    console.log({tags: tags.data})
     
   }
   return {
     props: {
-        query: context.query,
         nextVideo: random,
         data,
         catalog,

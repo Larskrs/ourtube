@@ -5,17 +5,14 @@ import { shortTxt } from "../lib/TextLib";
 function VideoPlayer({ id, onEnded, title, qualities=[360] }) {
 
   
-    const [quality, setQuality] = useState(360);
+    const [quality, setQuality] = useState(qualities != null ? qualities[qualities.length - 1] : 360);
     const [progress, setProgress] = useState(0)
-    useEffect(() => {
-      if (qualities) {
-        setQuality(qualities[qualities.length - 1])
-      }
-    })
+
 
     console.log({qualities})
 
     
+
 
     useEffect(() => {
       const vd = document.getElementById('video');
@@ -66,11 +63,11 @@ function VideoPlayer({ id, onEnded, title, qualities=[360] }) {
     }, [])
 
     
-
+    
     const source = `/api/videos?videoId=${id}&quality=${quality}`
     return (
 
-      <div>
+      <div key={id}>
 
       <div id={"video-player"} className="video-player" style={{display: `flex`, flexDirection: `column`, gap: `1rem`}}>
 
@@ -111,9 +108,12 @@ function VideoPlayer({ id, onEnded, title, qualities=[360] }) {
           <div style={{display: `flex`, gap: `.25rem`, width: `100%`, margin: `0`}}>
             {qualities.map((q) => {
               return (
-                <button style={quality == q ? {outline: `2px solid #5448C8`} : {}} onClick={() => setQuality(q)}>{q}p</button>
+                <button key={q} style={quality == q ? {outline: `2px solid #5448C8`} : {}} onClick={() => setQuality(q)}>{q}p</button>
               )
             })}
+            
+              {qualities.length == 0 && <p>Sorry, this content is not yet ready or has simply given up. Please give it some time.</p> }
+            
           </div>
         </div>
 

@@ -89,9 +89,13 @@ function optimizeVideo (fileName, stream) {
         let qualities = []
         
         let possible = [360, 480, 540, 720, 1080, 1920 ]
-        possible = possible.filter(function (i) {
-          return i <= size.height;
-        })
+        if (possible[0] > size.height) {
+          possible = [360]
+        } else {
+          possible = possible.filter(function (i) {
+            return i <= size.height;
+          })
+        }
         console.log({possible})
         await captureScreenshots(basePath, id)
 
@@ -101,7 +105,7 @@ function optimizeVideo (fileName, stream) {
           await createVideo ( basePath, id, el)
         }
 
-      // deleteOriginalVideo(basePath)
+      deleteOriginalVideo(basePath)
 
       function createVideo(basePath, id, height) {
 
@@ -112,7 +116,7 @@ function optimizeVideo (fileName, stream) {
         return new Promise((resolve,reject)=>{
           Ffmpeg(basePath)
           .size(`?x${height}`)
-          .videoBitrate("200k")
+          .videoBitrate("2000k")
           .save(`./videos/${id}/${height}.mp4`)
           .on('err',(err)=>{
               return reject(err)
@@ -154,7 +158,13 @@ function optimizeVideo (fileName, stream) {
   
   function deleteOriginalVideo (basePath) {
     console.log("Preparing to delete original video...")
-    fs.unlinkSync(basePath)
+    fs.unlink(basePath, (err) => {
+        if (err) {
+          console.error(err); return;
+        }
+        console.log("Finished Deleting original file without issue. :)")
+    })
+    
   }
   function readVideo(basePath){
       return new Promise((resolve,reject)=>{
