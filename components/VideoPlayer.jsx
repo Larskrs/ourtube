@@ -8,12 +8,6 @@ function VideoPlayer({ id, onEnded, title, qualities=[360] }) {
     const [quality, setQuality] = useState(qualities != null ? qualities[qualities.length - 1] : 360);
     const [progress, setProgress] = useState(0)
 
-
-    console.log({qualities})
-
-    
-
-
     useEffect(() => {
       const vd = document.getElementById('video');
       const vp = document.getElementById('video-player');
@@ -25,7 +19,6 @@ function VideoPlayer({ id, onEnded, title, qualities=[360] }) {
 
         
 
-        console.log('fullscreen')
         console.log({event})
         
         const fullscreened = event.target
@@ -72,6 +65,7 @@ function VideoPlayer({ id, onEnded, title, qualities=[360] }) {
       <div id={"video-player"} className="video-player" style={{display: `flex`, flexDirection: `column`, gap: `1rem`}}>
 
         <video
+          key={id}
           src={source}
           style={{width: `100vw`, maxWidth: `100%`, maxHeight: `80vh`, aspectRatio: 16/9}}
           height="auto"

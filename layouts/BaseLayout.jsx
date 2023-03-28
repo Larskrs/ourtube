@@ -14,7 +14,7 @@ export default function BaseLayout ({children}) {
                     <Link href={"/"}>Clumsyturtle</Link>
                 </div>
                 <Link href="/" legacyBehavior ><a  className={"link"}> Home </a></Link>
-                <Link href="/videos/" legacyBehavior ><a  className={"link"}> Videos </a></Link>
+                <Link href="/watch/" legacyBehavior ><a  className={"link"}> Watch </a></Link>
                 <Link href="/upload/" legacyBehavior ><a  className={"link"}> Upload </a></Link>
             </div> 
             <nav>

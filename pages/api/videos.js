@@ -125,7 +125,7 @@ function optimizeVideo (fileName, stream) {
         return new Promise((resolve,reject)=>{
           Ffmpeg(path)
           .size(`?x${height}`)
-          .videoBitrate("2000k")
+          .videoBitrate(height + "0k")
           .save(`./videos/${id}/${height}.mp4`)
           .on('err',(err)=>{
               return reject(err)

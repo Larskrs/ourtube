@@ -1,24 +1,21 @@
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import VideoPlayer from "../../components/VideoPlayer";
-import supabase from "../../lib/Supabase";
-import { getRandomVideo, getRandomVideos, getVideoPaths } from "../../lib/catalog"
+import VideoPlayer from "../components/VideoPlayer";
+import supabase from "../lib/Supabase";
+import { getRandomVideo, getRandomVideos, getVideoPaths } from "../lib/catalog"
 import Image from "next/image";
-import styles from "../../styles/Videos.module.css"
+import styles from "../styles/Videos.module.css"
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { shortTxt, getTimeAgo } from "../../lib/TextLib";
-import BaseLayout from "../../layouts/BaseLayout";
+import { shortTxt, getTimeAgo } from "../lib/TextLib";
+import BaseLayout from "../layouts/BaseLayout";
 
 function VideoPage({ nextVideo, data, catalog, tags }) {
-  const [count, setCount] = useState(0)
-  const router = useRouter();
-  useEffect(() => {
-    setCount(0)
-  }, [router.query.slug])
 
-  const { id } = router.query;
+  const router = useRouter();
+
+  const id= router.query.v;
   
 
   useEffect(() => {
@@ -55,15 +52,16 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
         <main className={styles.main}>
                  <div className={styles.video}>
                   <VideoPlayer
-                   key={id}
-                   title={data.title}
-                   id={id}
-                   qualities={data.quality ? (data.quality) : []}
-                   onEnded={() => {
-                    if (nextVideo) {
-                      router.push("/videos/" + nextVideo.id)
-                    }
-                  }}/>
+                    key={id}
+                    title={data.title}
+                    id={id}
+                    qualities={data.quality ? (data.quality) : []}
+                    onEnded={() => {
+                      if (nextVideo) {
+                         router.push("/watch?v=" + nextVideo.id)
+                      }
+                    }}
+                  />
 
                   <div className={styles.info}>
                   <h2 style={{textAlign: `left`}}>{shortTxt(data.title, 75)}</h2>
@@ -78,7 +76,7 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
 
                   {catalog.data.map((vid) => {
                     return (
-                      <Link className={styles.videoComp} replace key={vid.id} href={"/videos/" + vid.id}>
+                      <Link className={styles.videoComp} key={vid.id} href={"/watch?v=" + vid.id}>
                         <Image src={"/api/thumbnail?id=" + vid.id} alt={"Thumbnail"} width={240} height={135}/>
                         <div className={styles.info}>
 
@@ -101,8 +99,8 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
 export const getServerSideProps = async (context) => {
   
   
-  const id = context.query.id;
-  const random = await (await getRandomVideo([id])).data
+  const id = context.query.v;
+  const random = await (await getRandomVideo(id ? [id] : [])).data
   const data = (await supabase.from("videos").select("*").eq("id", id).single()).data
   
   const catalog = await getRandomVideos(25)
@@ -110,7 +108,7 @@ export const getServerSideProps = async (context) => {
   if (!data) {
     return {
       redirect: {
-        destination: "/videos/" + random.id,
+        destination: "/watch?v=" + random.id,
         permanent: false
       }
     }

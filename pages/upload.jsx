@@ -51,7 +51,7 @@ function VideoUpload() {
       } finally {
         setSubmitting(false);
         setProgress(0);
-        setLink("/videos/" + newId)
+        setLink("/watch?v=" + newId)
     }
   }
   
@@ -157,8 +157,8 @@ function VideoUpload() {
           {/* <button className="visability" ><img src="/icons/thick/circle.svg"></img>Public</button> */}
           
           </>}
-        {published && <Link style={{color: `aquamarine`}} href={link}>{link}</Link>}
-        {/* {id && link && <VideoPlayer onEnded={() => {}} id={id} />} */}
+        {published && <Link style={{color: `aquamarine`}} onAnimationEnd={() => {router.push(link)}} href={link}>{link}</Link>}
+        {/* {id && link && <VideoPlayer onEnded={() => {}} id={id} />} */} 
       </div>
     </div>
     </BaseLayout>
@@ -166,18 +166,16 @@ function VideoUpload() {
 
       <style jsx>{`
 
-.visability {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+        .visability {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           gap: 1rem;
         }
-
         .tag_container {
           display: grid;
           grid-template-columns: repeat(auto-fill, 140px);
           gap: .5rem;
-
         }
         .tag {
           text-align: center;
@@ -205,7 +203,6 @@ function VideoUpload() {
         .seperator {
           color: #777;
         }
-
         .upload {
           transition: all 0.1s;
           background: var(--gray-200);
