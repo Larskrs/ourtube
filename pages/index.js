@@ -22,7 +22,7 @@ export default function Home() {
         <p>We have moved the upload screen to its own page. Click on the link below to go there.</p>
         <div style={{gap: `1rem`, display: `flex`}}>
           <Link href={"/upload"} className={styles.link}>Uploader</Link>
-          <Link className={styles.link} href={"/videos"} >Videos</Link>
+          <Link className={styles.link} href={"/watch"} >Watch</Link>
         </div>
       </main>
     </div>
