@@ -248,6 +248,7 @@ function VideoUpload() {
           min-width: 50%;
           height: 100vh;
           width: 100%;
+          align-items: center;
           
         }
         input {

@@ -71,9 +71,18 @@ function optimizeVideo (fileName, stream) {
 
   async function createVideos(){
       console.log("Starting video...")
-      const data = await readVideo(basePath);
+      const convPath = path.join(__dirname, "../../../../" ,dir, id, "/converted.mp4")
+      console.log({convPath})
+
+
+      await convert(basePath, convPath)
+
+      await deleteOriginalVideo(basePath)
+
+      const data = await readVideo(convPath);
       const size = {width: data.streams[0].width, height: data.streams[0].height}
       console.log({original_size: size})
+      
 
       console.log("Uploading to database...")
       const select = await supabase.from("videos")
@@ -88,7 +97,7 @@ function optimizeVideo (fileName, stream) {
 
         let qualities = []
         
-        let possible = [360, 480, 540, 720, 1080, 1920 ]
+        let possible = [360, 480, 540, 720, 1080, 1440 ]
         if (possible[0] > size.height) {
           possible = [360]
         } else {
@@ -97,24 +106,24 @@ function optimizeVideo (fileName, stream) {
           })
         }
         console.log({possible})
-        await captureScreenshots(basePath, id)
+        await captureScreenshots(convPath, id)
 
         for (let i = 0; i < possible.length; i++) {
           const el = possible[i];
           console.log({el})
-          await createVideo ( basePath, id, el)
+          await createVideo ( convPath, id, el)
         }
 
-      deleteOriginalVideo(basePath)
+      deleteOriginalVideo(convPath)
 
-      function createVideo(basePath, id, height) {
+      function createVideo(path, id, height) {
 
         console.log(`[Handling Video] id: (${id}) - ${height}p `)
         console.log({height})
         
     
         return new Promise((resolve,reject)=>{
-          Ffmpeg(basePath)
+          Ffmpeg(path)
           .size(`?x${height}`)
           .videoBitrate("2000k")
           .save(`./videos/${id}/${height}.mp4`)
@@ -135,13 +144,13 @@ function optimizeVideo (fileName, stream) {
       }
   }
 
-  function captureScreenshots(basePath, id) {
+  function captureScreenshots(path, id) {
 
     console.log(`[Handling Video] id: (${id}) - Screenshots `)
     
 
     return new Promise((resolve,reject)=>{
-      Ffmpeg(basePath)
+      Ffmpeg(path)
       .screenshots({
         count: 4,
         folder: './videos/'+id+'/thumbnails/',
@@ -156,9 +165,9 @@ function optimizeVideo (fileName, stream) {
   }
 
   
-  function deleteOriginalVideo (basePath) {
+  function deleteOriginalVideo (path) {
     console.log("Preparing to delete original video...")
-    fs.unlink(basePath, (err) => {
+    fs.unlink(path, (err) => {
         if (err) {
           console.error(err); return;
         }
@@ -166,9 +175,9 @@ function optimizeVideo (fileName, stream) {
     })
     
   }
-  function readVideo(basePath){
+  function readVideo(path){
       return new Promise((resolve,reject)=>{
-          Ffmpeg(basePath)
+          Ffmpeg(path)
           .ffprobe((err, data) => {
             if (err) {
               return reject(err)
@@ -177,6 +186,27 @@ function optimizeVideo (fileName, stream) {
           })
       })
   }
+  function convert(basePath, convPath){
+
+      console.log("Attempting to convert video.")
+
+      return new Promise((resolve,reject)=>{
+        Ffmpeg(basePath)
+        .format("mp4")
+        .saveToFile(convPath)
+        .on('err',async (err) =>{
+          console.log({error: err})
+            return reject(err)
+        })
+        .on('progress',async (progress) => {
+          console.log("progress")
+        }) 
+        .on('end', async (fim)=>{
+            console.log("Finished converting.")
+            return resolve()
+        })
+      })
+    }
 
 
 }
