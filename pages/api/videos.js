@@ -8,8 +8,12 @@ import logUpdate from 'log-update';
 export const config = {
   api: {
     bodyParser: false,
+    responseLimit: '12mb',
+    externalResolver: true,
   },
 };
+
+
 
 function uploadVideoStream(req, res) {
 
