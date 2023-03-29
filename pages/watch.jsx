@@ -10,6 +10,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import { shortTxt, getTimeAgo } from "../lib/TextLib";
 import BaseLayout from "../layouts/BaseLayout";
+import VideoLink from "../components/VideoLink";
 
 function VideoPage({ nextVideo, data, catalog, tags }) {
 
@@ -76,16 +77,13 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
 
                   {catalog.data.map((vid) => {
                     return (
-                      <Link className={styles.videoComp} key={vid.id} href={"/watch?v=" + vid.id}>
-                        <Image src={"/api/thumbnail?id=" + vid.id} alt={"Thumbnail"} width={240} height={135}/>
-                        <div className={styles.info}>
-
+                      <VideoLink key={vid.id} id={vid.id} link={"/watch?v=" + vid.id}>
+                          
                           <p className={styles.video_title}>{shortTxt(vid.title, 40)}</p>
                           <p className={styles.time}>{getTimeAgo(vid.created_at)}</p>
-                          {/* <p>Larskrs</p> */}
+                          {/* <p>{vid.users_public.username}</p> */}
                         
-                        </div>
-                      </Link>
+                        </VideoLink>
                     )
                   })}
                   </div>

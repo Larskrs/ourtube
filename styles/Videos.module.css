@@ -8,8 +8,9 @@
     align-items: center;
     display: flex;
     flex-direction: column;
-    width: 100;
+    width: 100%;
     padding-left: 1rem;
+    padding-top: 1rem;
 }
 .main {
     display: flex; 
@@ -29,7 +30,7 @@
     position: relative;
 }
 .recommended {
-    min-width: 500px;
+    min-width: 350px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -63,9 +64,9 @@
     }
 
     .recommended {
-        width: 100%e;
+        width: 100%;
         min-width: 350px;
-        max-width: 100vw;
+        max-width: 500px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;

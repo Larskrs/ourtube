@@ -1,9 +1,13 @@
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
+import LoginButton from "../components/LoginButton"
+import Image from "next/image";
 
 export default function BaseLayout ({children}) {
 
     const [sidebar, setSidebar] = useState()
+    const session = useSession()
 
     return (
         <>
@@ -13,9 +17,15 @@ export default function BaseLayout ({children}) {
                     {HamburgerMenu(false)}
                     <Link href={"/"}>Clumsyturtle</Link>
                 </div>
+                <br />
+                <p>Navigation:</p>
                 <Link href="/" legacyBehavior ><a  className={"link"}> Home </a></Link>
                 <Link href="/watch/" legacyBehavior ><a  className={"link"}> Watch </a></Link>
                 <Link href="/upload/" legacyBehavior ><a  className={"link"}> Upload </a></Link>
+                {session.status == "authenticated" && <Link href="/studio/" legacyBehavior ><a  className={"link"}> Studio </a></Link>}
+                <br />
+                <p>User:</p>
+                <LoginButton />
             </div> 
             <nav>
                 <div className="row">
@@ -33,6 +43,10 @@ export default function BaseLayout ({children}) {
         </div>
 
         <style jsx>{`
+            .avatar {
+                border: none;
+                border-radius: 50%;
+            }
             .link {
                 background: var(--gray-200);
                 padding: .5rem 1rem;
@@ -44,15 +58,21 @@ export default function BaseLayout ({children}) {
                 background-color: var(--gray-000);
             }
             .container main {
+                margin-top: 70px;
                 display: flex;
                 flex-direction: row;   
             }
             .container nav {
                 display: flex;
+                position: fixed;
                 gap: 1rem;
                 padding: 1rem;
                 align-items: center;
                 font-size: 20px;
+                height: 70px;
+                background: black;
+                width: 100%;
+                border-bottom: var(--gray-300) 1px solid;
             }
             .row {
                 display: flex;
@@ -64,11 +84,12 @@ export default function BaseLayout ({children}) {
             .sidebar {
                 display: flex;
                 flex-direction: column;
+                pointer-events: none;
                 padding: 10px;
                 position: fixed;
                 left: 0px;
                 top: 0px;
-                width: 200px;
+                width: 250px;
                 height: 100vh;
                 background: var(--gray-100);
                 overflow-y: scroll;
@@ -79,6 +100,7 @@ export default function BaseLayout ({children}) {
             }
             .shown {
                 animation: slide 250ms cubic-bezier(0,1,1,1);
+                pointer-events: all;
             }
             .content {
                 width: 100%;
@@ -111,15 +133,27 @@ export default function BaseLayout ({children}) {
 
         return (
             <>
-            <button className="button" type="button" disabled={state} onClick={() => setSidebar(!sidebar)}>
-                <div className="hamburger">
-                    <span className="hamb" />
-                    <span className="hamb" />
-                    <span className="hamb" />
-                </div>
+            <button style={{}} className={session.status === "authenticated" ? "avatar" : "button"} type="button" disabled={state} onClick={() => setSidebar(!sidebar)}>
+                {session.status === "authenticated" &&
+                    <Image src={session.data.user.image} alt={"user avatar"} width={35} height={35} />
+                }
+                {session.status !== "authenticated" &&
+                    <div className="hamburger">
+                        <span className="hamb" />
+                        <span className="hamb" />
+                        <span className="hamb" />
+                    </div>
+                }
             </button>
 
             <style jsx>{`
+                .avatar {
+                    border-radius: 50%;
+                    overflow: hidden;
+                    padding: 0;
+                    height: 35px;
+                    width: 35px;
+                }
                 .button {
                     padding: 10px;
                     background: var(--gray-200);
@@ -133,6 +167,7 @@ export default function BaseLayout ({children}) {
                     min-height: 15px;
                     padding: 0;
                     z-index: 0;
+                    pointer-events: none;
                 }
                 .hamb {
                     position: absolute;
@@ -143,6 +178,7 @@ export default function BaseLayout ({children}) {
                     top: 50%;
                     z-index: 0;
                     transition: all 350ms cubic-bezier(0,1,1,1);
+                    pointer-events: none;
                 }
                 .hamb:nth-child(1) {
                     top: 100%;

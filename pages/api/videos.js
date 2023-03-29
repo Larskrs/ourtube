@@ -3,7 +3,8 @@ import busboy from "busboy";
 import fs from "fs";
 import path from "path";
 import logUpdate from 'log-update';
-
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "./auth/[...nextauth]"
 
 export const config = {
   api: {
@@ -15,15 +16,23 @@ export const config = {
 
 
 
-function uploadVideoStream(req, res) {
+async function uploadVideoStream(req, res) {
 
-  
+  const session = await getServerSession(req, res, authOptions)
+
+  if (!session) {
+    res.status(404).json({message: 'You are not logged in or have an invalid session, please try again later.'})
+    return;
+  }
+
+
+
 
 
   const bb = busboy({ headers: req.headers });
 
   let fileName;
-
+  
   bb.on("file", (_, file, info) => {
     // auth-api.mp4
     fileName = info.filename;
@@ -35,14 +44,30 @@ function uploadVideoStream(req, res) {
     file.pipe(stream);
   });
 
-  bb.on("close", () => {
+  bb.on("close", async () => {
     res.writeHead(200, { Connection: "close" });
     res.end(`That's the end`);
+
+    const id = fileName.split('.').slice(0, -1).join('.')
+    
+    console.log("Uploading to database...")
+    const select = await supabase.from("videos")
+    .insert({
+      id: id,
+      source: "/api/videos?videoId=" + id,
+      title: "",
+      storage: process.env.NEXT_PUBLIC_STORAGE_ID,
+      user_id: session.user.id,
+    })
+    .select("*")
+    console.log({select: (await select).data})
 
     optimizeVideo(fileName, null);
   });
 
   req.pipe(bb);
+
+
 
   return;
 }
@@ -53,7 +78,7 @@ import supabase from "../../lib/Supabase";
 
 
 
-function optimizeVideo (fileName, stream) {
+async function optimizeVideo (fileName, stream) {
 
   const startTime = new Date().getTime()
 
@@ -70,6 +95,7 @@ function optimizeVideo (fileName, stream) {
   console.log(`./videos/${id}/`)
   fs.mkdirSync(`./videos/${id}/`)
 
+  
 
   createVideos()
 
@@ -88,16 +114,7 @@ function optimizeVideo (fileName, stream) {
       console.log({original_size: size})
       
 
-      console.log("Uploading to database...")
-      const select = await supabase.from("videos")
-        .insert({
-          id: id,
-          source: "/api/videos?videoId=" + id,
-          title: "",
-          storage: process.env.NEXT_PUBLIC_STORAGE_ID,
-        })
-        .select("*")
-        console.log({select: (await select).data})
+        
 
         let qualities = []
         
@@ -129,7 +146,9 @@ function optimizeVideo (fileName, stream) {
         return new Promise((resolve,reject)=>{
           Ffmpeg(path)
           .size(`?x${height}`)
-          .videoBitrate(height + "0k")
+          .videoBitrate(height + "k")
+          .format("mp4")
+          .videoCodec("libx264")
           .save(`./videos/${id}/${height}.mp4`)
           .on('err',(err)=>{
               return reject(err)
@@ -316,7 +335,7 @@ export default async function handler(req, res) {
   }
 
   if (method === "POST") {
-    return uploadVideoStream(req, res);
+    return await uploadVideoStream(req, res);
   }
 
   return res.status(405).json({ error: `Method ${method} is not allowed` });

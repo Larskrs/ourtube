@@ -5,6 +5,7 @@ import Link from "next/link";
 import supabase from "../lib/Supabase";
 import VideoPlayer from "../components/VideoPlayer";
 import BaseLayout from "../layouts/BaseLayout";
+import { useSession } from "next-auth/react";
 
 function VideoUpload() {
   const [file, setFile] = useState();
@@ -18,6 +19,10 @@ function VideoUpload() {
   const [tags, setTags] = useState([])
   const [tagInput, setTagInput] = useState("")
   const [fileTempUrl, setFileTempUrl] = useState("")
+
+  const session = useSession({
+    required: true,
+  })
 
   async function handleSubmit() {
     const data = new FormData();
@@ -70,6 +75,7 @@ function VideoUpload() {
     if (submitting) { return;}
     if (!file) { return;}
     if (!title) { return;}
+    if (session.status != "authenticated") { return; }
     
     
     const {data, error} = await supabase.from("videos")
@@ -98,9 +104,17 @@ function VideoUpload() {
     if (!title) { return false;}
     if (!tags) { return false}
     if (tags.length <= 0) { return false;}
+    if (session.status != "authenticated") { return; }
     
     return true;
   }
+  function canUpload () {
+    if (session.status != "authenticated") { return; }
+    if (id) { return false; }
+    return true;
+  }
+
+
 
   return (
     <>
@@ -113,7 +127,7 @@ function VideoUpload() {
         {error && <p>{error}</p>}
         {submitting && <p>{progress}%</p>}
         {submitting && <progress hidden={!submitting} value={progress} max={100} />}
-        {!id && <form className="form" action="POST">
+        {canUpload() && <form className="form" action="POST">
           <div>
             <label htmlFor="file">File</label>
             <input type="file" id="file" accept=".mp4" onChange={handleSetFile} />
@@ -141,8 +155,8 @@ function VideoUpload() {
         </form>
         <p className="seperator">Video tags</p>
         <div style={{gap: `.25rem`, display: "flex"}}>
-          <input type="text" id="title" placeholder="tag..." autoComplete="off=" onChange={(event) => setTagInput(event.target.value)} />
-          {tagInput && <button onClick={() => {if (tagInput) {handleTagAdd()}}}>Add</button> }
+          <input type="text" id="tagInput" placeholder="tag..." autoComplete="off=" onChange={(event) => setTagInput(event.target.value)} />
+          {tagInput && <button onClick={(event) => {if (tagInput) {handleTagAdd(event)}}}>Add</button> }
         </div>
         <div className="tag_container">
           {tags.map(tag => <span key={tag.id} className="tag" onClick={() => {handleRemoveTag(tag)}} >{tag}  </span>)}
@@ -245,7 +259,7 @@ function VideoUpload() {
           min-width: 50%;
           height: 100vh;
           width: 100%;
-          align-items: center;
+
           
         }
         input {
@@ -255,6 +269,7 @@ function VideoUpload() {
           display: flex;
           flex-direction: column;
           gap: 0.5rem;
+          max-width: 600px;
         }
         .preview {
           width: 200px
@@ -276,13 +291,15 @@ function VideoUpload() {
       </>
   );
 
-  async function handleTagAdd () {
+  async function handleTagAdd (event) {
 
     console.log('attempting to add tag')
 
-    if (tags.includes(tagInput)) { return; }
+    if (tags.includes(tagInput.toLowerCase())) { return; }
 
     console.log("tag is not added yet.")
+    document.getElementById("tagInput").value = ""
+    
 
     const max_tags = 5;
     if (tags.length > max_tags) { return; }
@@ -299,6 +316,8 @@ function VideoUpload() {
     if (!data) { return; }
     if (data.length == 0) { return; }
     
+    event.target.value = "";
+
     setTags([...tags, tagInput.toLowerCase()])
   }
   async function handleRemoveTag (tag) {
