@@ -1,10 +1,10 @@
 import BaseLayout from "../../layouts/BaseLayout";
 
-export default function() {
+export default function StudioPage () {
     return (
         <>
             <BaseLayout>
-                
+
             </BaseLayout>
         </>
     );
