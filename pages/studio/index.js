@@ -9,7 +9,7 @@ import { getTimeAgo } from "../../lib/TextLib";
 import BaseLayout from "../../layouts/BaseLayout";
 import VideoLink from "../../components/VideoLink";
 
-export default function studioPage ({videos}) {
+export default function StudioPage ({videos}) {
 
     const session = useSession({
         required: true,
