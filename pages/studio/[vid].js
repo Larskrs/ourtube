@@ -50,7 +50,7 @@ export default function StudioPage ({data}) {
                         <div className="row">
                             {visibilities.map((v) => {
                                 return (
-                                    <button onClick={() => {setVisibility(v.id)}} style={visibility == v.id ? {outline: `2px solid #5448C8`} : (data.visibility == v.id ? { outline: `2px solid var(--gray-600)`} : {})} >{v.name}</button>
+                                    <button  key={v.id} onClick={() => {setVisibility(v.id)}} style={visibility == v.id ? {outline: `2px solid #5448C8`} : (data.visibility == v.id ? { outline: `2px solid var(--gray-600)`} : {})} >{v.name}</button>
                                 )
                             })}
                     </div>
