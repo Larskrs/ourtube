@@ -60,6 +60,8 @@ export default function BaseLayout ({children}) {
             .container main {
                 margin-top: 70px;
                 display: flex;
+                width: 100%;
+                min-height: 100vh;
                 flex-direction: row;   
             }
             .container nav {

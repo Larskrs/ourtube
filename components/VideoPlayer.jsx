@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { shortTxt } from "../lib/TextLib";
 
-function VideoPlayer({ id, onEnded, title, qualities=[360] }) {
+function VideoPlayer({ id, onEnded, title, qualities=[360], style }) {
 
   
     const [quality, setQuality] = useState(qualities != null ? qualities[qualities.length - 1] : 360);
@@ -60,14 +60,14 @@ function VideoPlayer({ id, onEnded, title, qualities=[360] }) {
     const source = `/api/videos?videoId=${id}&quality=${quality}`
     return (
 
-      <div key={id}>
+      <div key={id} style={style}>
 
       <div id={"video-player"} className="video-player" style={{display: `flex`, flexDirection: `column`, gap: `1rem`}}>
 
         <video
           key={id}
           src={source}
-          style={{width: `100vw`, maxWidth: `100%`, maxHeight: `80vh`, aspectRatio: 16/9}}
+          style={{width: `100vw`, maxWidth: "100%", maxHeight: `80vh`, aspectRatio: 16/9}}
           height="auto"
           controls
           autoPlay

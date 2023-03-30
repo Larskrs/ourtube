@@ -30,7 +30,9 @@ export default function StudioPage ({videos}) {
                           
                           <p className={styles.video_title}>{shortTxt(vid.title, 40)} </p>
                           <p className={styles.time}>{getTimeAgo(vid.created_at)}     </p>
-                          <button>Edit</button>
+                          {/* <button>Edit</button> */}
+                          {getVisibility(vid.visibility)}
+                          
                         
                         </VideoLink>
               )
@@ -50,6 +52,17 @@ export default function StudioPage ({videos}) {
             `}</style>
         </>
       );
+
+              function getVisibility (vis) {
+                          
+                switch (vis) {
+                  default: return <p>Hidden</p>
+                  case 1: return <p style={{color: `#5448C8`}}>Anonymous</p>
+                  case 2: return <p style={{color: 'cyan'}}>Public</p>
+                }
+
+              }
+
     }
 
 export async function getServerSideProps (ctx) {

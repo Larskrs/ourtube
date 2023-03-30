@@ -59,18 +59,6 @@ export default function VideoLink ({ children, id, link}) {
                         justify-content: center;
                       }
 
-                      @media only screen and (max-width: 800px) {
-                        
-                        .main {
-                          display: flex;
-                          flex-direction: column;
-                          width: 100%;
-                        }
-                        .thumb {
-                          width: 100%;
-                        }
-
-                      }
 
                     `}</style>    
         </>
