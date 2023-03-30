@@ -53,6 +53,28 @@ input[type="text"] {
   font-weight: 700;
   background-color: #222;
 }
+input[type="checkbox"] {
+  min-width:  20px;
+  min-height: 20px;
+}
+select {
+  border: none;
+  border-radius: .25rem;
+  padding: 5px;
+  cursor: pointer;
+  font-weight: 700;
+  background-color: var(--gray-100);
+  outline: none;
+}
+option {
+  border: none;
+  border-radius: .25rem;
+  padding: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  background-color: var(--gray-100);
+  outline: none;
+}
 form {
   display: flex;
   flex-direction: column;

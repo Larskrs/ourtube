@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import supabase from "../../lib/Supabase";
 import { useRouter } from "next/router";
+import Link from "next/link"
 
 export default function StudioPage ({data}) {
 
@@ -43,7 +44,7 @@ export default function StudioPage ({data}) {
                 {/* {data && <h1>{data.title}</h1> } */}
                 <main className="main">
                     <VideoPlayer  style={{maxWidth: "500px"}} id={data.id} title={data.title} qualities={data.quality ? data.quality : []} onEnded={() => {}} />
-
+                    <Link href={`/watch?id=${data.id}`} >Watch here</Link>
                     <div className="form">
 
                         <p>Select visibility</p>

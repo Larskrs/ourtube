@@ -75,6 +75,7 @@ export default function BaseLayout ({children}) {
                 background: black;
                 width: 100%;
                 border-bottom: var(--gray-300) 1px solid;
+                z-index: 100;
             }
             .row {
                 display: flex;
