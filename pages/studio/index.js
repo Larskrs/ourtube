@@ -57,7 +57,7 @@ export default function StudioPage ({videos}) {
                           </div>
                         <div className="vid_info">
                           <div style={{cursor: `pointer`}} onClick={() => {router.push(`/studio/${vid.id}`)}}>
-                            <Image src={`/api/thumbnail?id=${vid.id}`} width={160/1.2} height={90/1.2} />
+                            <Image alt={"Thumbnail"} src={`/api/thumbnail?id=${vid.id}`} width={160/1.2} height={90/1.2} />
                           </div>
                           <div style={{minWidth: `200px`}}>
                             <p className={styles.video_title}>{shortTxt(vid.title, 40)} </p>

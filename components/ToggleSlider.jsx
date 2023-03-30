@@ -1,4 +1,4 @@
-export default function({onChange}) {
+export default function ToggleSlider ({onChange}) {
     return (
         <>
             <label className="switch" onChange={() => onChange()}>
