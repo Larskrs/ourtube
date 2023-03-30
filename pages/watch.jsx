@@ -23,10 +23,15 @@ function VideoPage({ nextVideo, data, catalog, tags }) {
 
     navigator.mediaSession.setActionHandler("nexttrack", (details) => {
       if (nextVideo) {
-        router.push("/videos/" + nextVideo.id)
+        router.push("/watch?id=" + nextVideo.id)
+      }
+    })
+    navigator.mediaSession.setActionHandler("previoustrack", (details) => {
+      if (nextVideo) {
+        router.back()
       }
     }
-    )  
+    )
   }, [])
   console.log({ id });
 

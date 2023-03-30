@@ -73,7 +73,6 @@ export default function StudioPage ({data}) {
                 .modal_container {
                     position: fixed;
                     width: 100vw;
-                    {/* background: var(--gray-200); */}
                     padding: 1rem;
                     height: 100vh;
                     z-index: 100;
@@ -81,6 +80,8 @@ export default function StudioPage ({data}) {
                     align-items: center;
                     justify-content: center;
                     backdrop-filter: blur(5px);
+                    z-index: 999;
+                    
                 }
                 .modal {
                     max-width: 300px;
@@ -92,9 +93,16 @@ export default function StudioPage ({data}) {
                     align-items: center;
                     flex-direction: column;
                     pointer-events: all;
-                    border: 1px solid var(--gray-200)
-                    
+                    border: 1px solid var(--gray-200);
+                    animation: show 300ms cubic-bezier(0,1.5,1,1.5);
                 }
+                @keyframes show {
+                    0% {
+                        scale: 0;
+                        opacity: 0;
+                    }
+                }
+                
                 .delete {
                     outline: 1px solid red;
                     color: white;
