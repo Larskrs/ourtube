@@ -51,8 +51,9 @@ export default function StudioPage ({videos}) {
               {videos && videos.data.map(vid => {
                 return (
                   <div className="video" key={vid.id} id={vid.id}>
-                            {selected.includes(vid.id).valueOf()}
+                            {/* {selected.includes(vid.id).valueOf()}  */}
                           <div>
+                            {selected && console.log(selected.includes(vid.id) + ' ' + vid.id)}
                             <Checkbox checked={selected.includes(vid.id)} onChange={(event) => {handleSelect(event, vid.id)}} />
                           </div>
                         <div className="vid_info">
@@ -149,10 +150,13 @@ export default function StudioPage ({videos}) {
 
                 if (isChecked) {
                   const idList = videos.data.map((v) => v.id)
-                  setSelected([...selected, idList])
+                  console.log(idList[0])
+                  setSelected(idList)
                 } else {
                   setSelected([])
                 }
+
+                console.log(selected)
               }
               async function handleChangeVisibility (event) {
 

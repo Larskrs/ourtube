@@ -5,7 +5,11 @@ export default function CheckBox({ checked, onChange, ...props}) {
     let defaultChecked = checked;
     const [isChecked, setIsChecked] = useState(defaultChecked);
 
-    
+    useEffect(() => {
+        console.log("Check: " + checked)
+        setIsChecked(checked)
+    }, [checked])
+
     return (
         <>
 

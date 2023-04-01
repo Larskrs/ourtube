@@ -83,12 +83,15 @@ export default function BaseLayout ({children}) {
                 font-size: 20px;
                 gap: 1rem;
             }
+            .sidebar .row {
+                height: 70px;
+            }
             
             .sidebar {
+                padding-inline: 1rem;
                 display: flex;
                 flex-direction: column;
                 pointer-events: none;
-                padding: 10px;
                 position: fixed;
                 left: 0px;
                 top: 0px;
@@ -97,7 +100,7 @@ export default function BaseLayout ({children}) {
                 background: var(--gray-100);
                 overflow-y: scroll;
                 animation: slideOut 500ms cubic-bezier(0,1,1,1) forwards;
-                z-index: 10;
+                z-index: 999;
                 gap: .5rem;
                 box-shadow: 5px 0px 10px var(--gray-100)
             }
