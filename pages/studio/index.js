@@ -33,30 +33,40 @@ export default function StudioPage ({videos}) {
             
             
 
-              <div style={selected.length > 0 ?{height: `60px`} : {height: `0px`, opacity: `0`, pointerEvents: `none`, paddingBlock: `0px`}} className="row quickactions">
-                <label>Visibility:</label>
-                <select name="cars" id="cars" defaultValue={-1} onChange={(event) => {handleChangeVisibility(event)}}>
-                  <option value={-1}></option>
-                  <option value={0}>Hidden</option>
-                  <option value={1}>Anonymous</option>
-                  <option value={2}>Public</option>
-                </select>
+              <div style={selected.length > 0 ?{height: `60px`} : {height: `0px`, opacity: `0`, pointerEvents: `none`, paddingBlock: `0px`}} className="row quickactions seperators">
+                
+                <div className="row">
+                  <p>Selected: {selected.length}</p>
+                </div>
+
+
+                <div className="row">
+                  <label>Visibility:</label>
+                  <select name="cars" id="cars" defaultValue={-1} onChange={(event) => {handleChangeVisibility(event)}}>
+                    <option value={-1}></option>
+                    <option value={0}>Hidden</option>
+                    <option value={1}>Anonymous</option>
+                    <option value={2}>Public</option>
+                  </select>
+                  </div>
               </div>
 
-            
+          
+
+
             <div className="videos">
             <div className="row">
               <Checkbox defaultValue={false} onChange={(isChecked) => {handleSelectAll(isChecked)}} />
             </div>
               {videos && videos.data.map(vid => {
                 return (
-                  <div className="video" key={vid.id} id={vid.id}>
+                  <div className="video " key={vid.id} id={vid.id}>
                             {/* {selected.includes(vid.id).valueOf()}  */}
                           <div>
                             {selected && console.log(selected.includes(vid.id) + ' ' + vid.id)}
                             <Checkbox checked={selected.includes(vid.id)} onChange={(event) => {handleSelect(event, vid.id)}} />
                           </div>
-                        <div className="vid_info">
+                        <div className="vid_info ">
                           <div style={{cursor: `pointer`}} onClick={() => {router.push(`/studio/${vid.id}`)}}>
                             <Image alt={"Thumbnail"} src={`/api/thumbnail?id=${vid.id}`} width={160/1.2} height={90/1.2} />
                           </div>
@@ -78,6 +88,12 @@ export default function StudioPage ({videos}) {
           </BaseLayout>
 
           <style jsx>{`
+
+
+              .seperators > div {
+                border-right: 2px solid var(--gray-300);
+                padding-right: 1rem;
+              }
               .quickactions {
                 overflow: hidden;
                 background: var(--gray-200);

@@ -13,7 +13,7 @@ export default function CheckBox({ checked, onChange, ...props}) {
     return (
         <>
 
-            <div className="checkbox" onClick={(event) => {
+            <div className={checked ? "checked checkbox": "checkbox"} onClick={(event) => {
                 const _checked = !isChecked;
                 setIsChecked(_checked)
                 event.target.checked = _checked;
@@ -31,11 +31,12 @@ export default function CheckBox({ checked, onChange, ...props}) {
                     border: 2px solid var(--gray-900);
                     border-radius: 4px;
                     cursor: pointer;
+                    transition: all 200ms cubic-bezier(0,1.5,1,1.5);
                 }
                 .fill {
                     width: 100%;
                     height: 100%;
-                    transition: all 200ms ease;
+                    transition: all 200ms cubic-bezier(0,1.5,1,1.5);
                     opacity: 1;
                 }
                 .filled {
